@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Wars — Galactic Conquest</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background canvas for all screens -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Global loading overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <div class="loading-title">Deploying Fleet...</div>
+            <div class="loading-sub" id="loadingSub">Synchronizing battle data</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 1: TITLE SCREEN                             -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenTitle" class="screen active">
+        <div class="title-top-bar">
+            <div class="player-info">
+                <div class="player-avatar" id="titleAvatar">👨‍🚀</div>
+                <div class="player-meta">
+                    <div class="player-name" id="titlePlayerName">Commander</div>
+                    <div class="player-level">
+                        <span class="level-badge" id="titleLevel">LVL 1</span>
+                        <div class="xp-bar-mini"><div class="xp-bar-mini-fill" id="titleXP"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="currency-bar">
+                <div class="currency-item coins">
+                    <span class="currency-icon">🪙</span>
+                    <span class="currency-val" id="titleCoins">500</span>
+                </div>
+                <div class="currency-item gems">
+                    <span class="currency-icon">💎</span>
+                    <span class="currency-val" id="titleGems">50</span>
+                </div>
+                <div class="currency-item trophies">
+                    <span class="currency-icon">🏆</span>
+                    <span class="currency-val" id="titleTrophies">0</span>
+                </div>
+            </div>
+            <button class="icon-btn" onclick="app.showScreen('settings')">⚙️</button>
+        </div>
+
+        <div class="title-center">
+            <div class="title-logo">
+                <div class="title-planet-anim">🪐</div>
+                <h1 class="game-title">PLANET<br>WARS</h1>
+                <p class="game-subtitle">⚔️ GALACTIC CONQUEST ⚔️</p>
+            </div>
+            <button class="mega-btn play-btn" onclick="app.showScreen('modes')">
+                <span class="mega-btn-icon">🚀</span>
+                <span class="mega-btn-text">PLAY</span>
+            </button>
+        </div>
+
+        <div class="title-bottom-nav">
+            <button class="nav-btn" onclick="app.showScreen('commanders')">
+                <span class="nav-icon">🎖️</span>
+                <span class="nav-label">Commanders</span>
+            </button>
+            <button class="nav-btn" onclick="app.showScreen('armory')">
+                <span class="nav-icon">⚔️</span>
+                <span class="nav-label">Armory</span>
+            </button>
+            <button class="nav-btn" onclick="app.showScreen('shop')">
+                <span class="nav-icon">🛒</span>
+                <span class="nav-label">Shop</span>
+            </button>
+            <button class="nav-btn" onclick="app.showScreen('themes')">
+                <span class="nav-icon">🎨</span>
+                <span class="nav-label">Themes</span>
+            </button>
+            <button class="nav-btn" onclick="app.showScreen('stats')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Stats</span>
+            </button>
+        </div>
+
+        <!-- Daily reward banner -->
+        <div class="daily-banner" id="dailyBanner" onclick="app.claimDaily()">
+            🎁 <strong>Daily Reward!</strong> Tap to claim <strong>100 🪙</strong>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 2: MODE SELECT                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenModes" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">🎮 SELECT MODE</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="mode-grid">
+            <div class="mode-card mode-theme-quick" onclick="app.selectMode('quick')">
+                <div class="mode-icon">⚡</div>
+                <div class="mode-name">Quick Match</div>
+                <div class="mode-desc">Fast 1v1 AI battle. Pick agents & fight!</div>
+                <div class="mode-badge free">FREE</div>
+                <div class="mode-reward">🪙 50 per win</div>
+            </div>
+            <div class="mode-card mode-theme-campaign" onclick="app.selectMode('campaign')">
+                <div class="mode-icon">🗺️</div>
+                <div class="mode-name">Campaign</div>
+                <div class="mode-desc">10 missions of increasing difficulty</div>
+                <div class="mode-badge story">STORY</div>
+                <div class="mode-reward">🪙 100 + ⭐ Stars</div>
+            </div>
+            <div class="mode-card mode-theme-tournament" onclick="app.selectMode('tournament')">
+                <div class="mode-icon">🏆</div>
+                <div class="mode-name">Tournament</div>
+                <div class="mode-desc">4-way bracket elimination championship</div>
+                <div class="mode-badge ranked">RANKED</div>
+                <div class="mode-reward">🪙 200 + 💎 Gems</div>
+            </div>
+            <div class="mode-card mode-theme-sandbox" onclick="app.selectMode('sandbox')">
+                <div class="mode-icon">🧪</div>
+                <div class="mode-name">Sandbox</div>
+                <div class="mode-desc">Full control — test any setup</div>
+                <div class="mode-badge lab">LAB</div>
+                <div class="mode-reward">No rewards</div>
+            </div>
+            <div class="mode-card mode-theme-astronaut" onclick="app.selectMode('ai_vs_me')">
+                <div class="mode-icon">👨‍🚀</div>
+                <div class="mode-name">AI vs Me</div>
+                <div class="mode-desc">You command one side manually versus an AI rival.</div>
+                <div class="mode-badge free">FREE</div>
+                <div class="mode-reward">🪙 75 per win</div>
+            </div>
+            <div class="mode-card mode-theme-characters" onclick="app.selectMode('character_duel')">
+                <div class="mode-icon">🎭</div>
+                <div class="mode-name">Character vs Character</div>
+                <div class="mode-desc">Pick iconic commanders and let them duel with style.</div>
+                <div class="mode-badge story">CHEAP</div>
+                <div class="mode-reward">🪙 40 entry • 🪙 120 reward</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 3: BATTLE SETUP (Agent Picker)              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenSetup" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('modes')">◀ Back</button>
+            <h2 class="screen-title">⚔️ BATTLE SETUP</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="setup-container">
+            <!-- Player 1 -->
+            <div class="setup-side blue-side">
+                <div class="setup-label">YOUR COMMANDER</div>
+                <div class="setup-avatar-big" id="setupAvatar1">🤖</div>
+                <select id="setupAgent1" class="agent-select" onchange="app.updateSetupPreview()">
+                    <option value="human">👨‍🚀 You (Manual)</option>
+                    <option value="adaptive" selected>🧠 Adaptive AI (Learning)</option>
+                    <option value="aggressive">⚔️ Admiral Blaze</option>
+                    <option value="greedy">🎯 Captain Greed</option>
+                    <option value="defensive">🛡️ General Shield</option>
+                    <option value="random">🎲 Agent Chaos</option>
+                    <option value="ppo">🧠 Neural Lord</option>
+                </select>
+                <div class="agent-stats" id="agent1Stats">
+                    <div class="stat-row"><span>Attack</span><div class="stat-bar"><div class="stat-fill atk" style="width:70%"></div></div></div>
+                    <div class="stat-row"><span>Defense</span><div class="stat-bar"><div class="stat-fill def" style="width:40%"></div></div></div>
+                    <div class="stat-row"><span>Economy</span><div class="stat-bar"><div class="stat-fill eco" style="width:90%"></div></div></div>
+                </div>
+            </div>
+            <div class="setup-vs">
+                <div class="vs-emblem">VS</div>
+                <div class="setup-map">
+                    <div class="map-label">🗺️ MAP</div>
+                    <select id="setupMap" class="agent-select">
+                        <option value="random">🎲 Random</option>
+                        <option value="duel_small">Small Arena</option>
+                        <option value="duel_medium" selected>Standard</option>
+                    </select>
+                </div>
+                <div class="setup-speed">
+                    <div class="map-label">⚡ SPEED</div>
+                    <div class="speed-btns">
+                        <button class="spd-btn" data-speed="0.5">0.5x</button>
+                        <button class="spd-btn active" data-speed="1.5">1.5x</button>
+                        <button class="spd-btn" data-speed="3">3x</button>
+                        <button class="spd-btn" data-speed="5">5x</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Player 2 -->
+            <div class="setup-side red-side">
+                <div class="setup-label">ENEMY COMMANDER</div>
+                <div class="setup-avatar-big" id="setupAvatar2">👾</div>
+                <select id="setupAgent2" class="agent-select" onchange="app.updateSetupPreview()">
+                    <option value="human">👨‍🚀 You (Manual)</option>
+                    <option value="adaptive">🧠 Adaptive AI (Learning)</option>
+                    <option value="aggressive" selected>⚔️ Admiral Blaze</option>
+                    <option value="greedy">🎯 Captain Greed</option>
+                    <option value="defensive">🛡️ General Shield</option>
+                    <option value="random">🎲 Agent Chaos</option>
+                    <option value="ppo">🧠 Neural Lord</option>
+                </select>
+                <div class="agent-stats" id="agent2Stats">
+                    <div class="stat-row"><span>Attack</span><div class="stat-bar"><div class="stat-fill atk" style="width:95%"></div></div></div>
+                    <div class="stat-row"><span>Defense</span><div class="stat-bar"><div class="stat-fill def" style="width:30%"></div></div></div>
+                    <div class="stat-row"><span>Economy</span><div class="stat-bar"><div class="stat-fill eco" style="width:40%"></div></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="battle-format-bar">
+            <div class="loadout-label">🎮 BATTLE STYLE</div>
+            <div class="format-pill-wrap" id="formatPills">
+                <button class="format-pill active" data-format="classic" onclick="app.setBattleFormat('classic')">Classic</button>
+                <button class="format-pill" data-format="ai_vs_me" onclick="app.setBattleFormat('ai_vs_me')">AI vs Me</button>
+                <button class="format-pill" data-format="character_duel" onclick="app.setBattleFormat('character_duel')">Character Duel</button>
+                <button class="format-pill" data-format="alien_invasion" onclick="app.setBattleFormat('alien_invasion')">Alien Invasion</button>
+            </div>
+        </div>
+        <!-- Active weapon/shield -->
+        <div class="loadout-bar">
+            <div class="loadout-label">🎒 LOADOUT</div>
+            <div class="loadout-slots" id="loadoutSlots">
+                <div class="loadout-slot" id="slot_weapon"><span>⚔️</span><small>Weapon</small></div>
+                <div class="loadout-slot" id="slot_shield"><span>🛡️</span><small>Shield</small></div>
+                <div class="loadout-slot" id="slot_boost"><span>🚀</span><small>Boost</small></div>
+                <div class="loadout-slot" id="slot_special"><span>💫</span><small>Special</small></div>
+            </div>
+        </div>
+        <button class="mega-btn launch-btn" onclick="app.launchBattle()">
+            <span class="mega-btn-icon">🚀</span>
+            <span class="mega-btn-text">LAUNCH BATTLE!</span>
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 4: COMMANDERS (Character Select)            -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenCommanders" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">🎖️ COMMANDERS</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="commander-grid" id="commanderGrid"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 5: ARMORY (Weapons & Gear)                  -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenArmory" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">⚔️ ARMORY</h2>
+            <div class="currency-bar-sm"><span>🪙</span><span id="armoryCoins">500</span></div>
+        </div>
+        <div class="armory-tabs">
+            <button class="armory-tab active" onclick="app.showArmoryTab('weapons')">⚔️ Weapons</button>
+            <button class="armory-tab" onclick="app.showArmoryTab('shields')">🛡️ Shields</button>
+            <button class="armory-tab" onclick="app.showArmoryTab('boosts')">🚀 Boosts</button>
+            <button class="armory-tab" onclick="app.showArmoryTab('specials')">💫 Specials</button>
+        </div>
+        <div class="armory-grid" id="armoryGrid"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 6: SHOP                                     -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenShop" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">🛒 SHOP</h2>
+            <div class="currency-bar-sm"><span>🪙</span><span id="shopCoins">500</span> &nbsp;<span>💎</span><span id="shopGems">50</span></div>
+        </div>
+        <div class="shop-storage-strip" id="shopStorageStrip"></div>
+        <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 7: THEMES                                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenThemes" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">🎨 THEMES</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="theme-grid" id="themeGrid"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 8: STATS & PROFILE                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenStats" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">📊 PROFILE & STATS</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="stats-content" id="statsContent"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 9: SETTINGS                                 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenSettings" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">⚙️ SETTINGS</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="settings-list">
+            <div class="setting-row">
+                <span>🎵 Sound Effects</span>
+                <label class="toggle"><input type="checkbox" checked id="settingSound"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>🎶 Music</span>
+                <label class="toggle"><input type="checkbox" checked id="settingMusic"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>📊 Show FPS</span>
+                <label class="toggle"><input type="checkbox" id="settingFPS"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>🌟 Particle Effects</span>
+                <label class="toggle"><input type="checkbox" checked id="settingParticles"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>📛 Show Labels</span>
+                <label class="toggle"><input type="checkbox" checked id="settingLabels"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>🌐 Territory Zones</span>
+                <label class="toggle"><input type="checkbox" checked id="settingTerritory"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>✈️ Fleet Trails</span>
+                <label class="toggle"><input type="checkbox" checked id="settingTrails"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <span>🔄 Reset Progress</span>
+                <button class="reset-btn" onclick="app.resetProgress()">RESET ALL</button>
+            </div>
+            <div class="setting-row">
+                <span>🏷️ Player Name</span>
+                <input type="text" class="name-input" id="settingName" placeholder="Commander" maxlength="15" onchange="app.saveName()">
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 10: CAMPAIGN MAP                            -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenCampaign" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('modes')">◀ Back</button>
+            <h2 class="screen-title">🗺️ CAMPAIGN</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="campaign-path" id="campaignPath"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 11: BATTLE SCREEN                           -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenBattle" class="screen">
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="human-hint hidden" id="humanHint">
+            👨‍🚀 Manual Control: click your planet → click target to launch a fleet.
+            <span class="hint-sub">Hold <b>Shift</b> to send more ships.</span>
+            <div class="hint-actions">
+                <button class="hint-btn" onclick="app.autoHumanAttack()">⚡ Auto Attack</button>
+            </div>
+        </div>
+        <div class="me-battle-tag hidden" id="meBattleTag">PLAYER: COMMANDER</div>
+
+        <!-- Battle HUD -->
+        <div class="battle-hud">
+            <!-- Top HUD -->
+            <div class="hud-top">
+                <div class="hud-player blue-player">
+                    <div class="hud-p-avatar" id="hudAvatar1">🤖</div>
+                    <div class="hud-p-info">
+                        <div class="hud-p-name" id="hudName1">Player 1</div>
+                        <div class="hud-health-bar">
+                            <div class="hud-health-fill blue-hp" id="hudHP1"></div>
+                            <span class="hud-health-text" id="hudShips1">100</span>
+                        </div>
+                    </div>
+                    <div class="hud-p-stats">
+                        <span>🪐 <b id="hudPlanets1">1</b></span>
+                        <span>📈 <b id="hudGrowth1">5</b></span>
+                    </div>
+                </div>
+                <div class="hud-center">
+                    <div class="hud-turn-ring">
+                        <svg viewBox="0 0 44 44" width="44" height="44">
+                            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"/>
+                            <circle cx="22" cy="22" r="18" fill="none" stroke="#00d4ff" stroke-width="3"
+                                stroke-dasharray="113" stroke-dashoffset="113" stroke-linecap="round"
+                                id="hudTurnRing" style="transform:rotate(-90deg);transform-origin:22px 22px"/>
+                        </svg>
+                        <span class="hud-turn-num" id="hudTurn">0</span>
+                    </div>
+                    <div class="hud-turn-label">TURN <span id="hudTurnMax">/ 200</span></div>
+                </div>
+                <div class="hud-player red-player">
+                    <div class="hud-p-stats">
+                        <span>🪐 <b id="hudPlanets2">1</b></span>
+                        <span>📈 <b id="hudGrowth2">5</b></span>
+                    </div>
+                    <div class="hud-p-info">
+                        <div class="hud-p-name" id="hudName2">Player 2</div>
+                        <div class="hud-health-bar">
+                            <div class="hud-health-fill red-hp" id="hudHP2"></div>
+                            <span class="hud-health-text" id="hudShips2">100</span>
+                        </div>
+                    </div>
+                    <div class="hud-p-avatar" id="hudAvatar2">👾</div>
+                </div>
+            </div>
+
+            <!-- AI Brain Monitor -->
+        <div class="ai-brain-panel" id="aiBrainPanel">
+            <div class="brain-header">🧠 AI CO-PILOT ADAPTATION <span class="brain-status-dot"></span></div>
+            <div class="brain-status">
+                <div class="brain-row">
+                    <span class="brain-label">TACTIC</span>
+                    <span class="brain-val tactic-val" id="brainTactic">OBSERVING</span>
+                </div>
+                <div class="brain-row">
+                    <span class="brain-label">CONFIDENCE</span>
+                    <div class="brain-bar-bg"><div class="brain-bar-fill" id="brainConfidence"></div></div>
+                    <span class="brain-pct" id="brainPct">50%</span>
+                </div>
+                <div class="brain-row">
+                    <span class="brain-label">MACHINE LEARNING</span>
+                    <span class="brain-val learning-val" id="brainLearning">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom HUD -->
+            <div class="hud-bottom">
+                <div class="decision-panel blue-player" id="decisionPanel1">
+                    <div class="dp-header">🤖 <span id="dpName1">Player 1</span> IS THINKING...</div>
+                    <div class="dp-content" id="dpContent1">Waiting for game start...</div>
+                </div>
+                
+                <div class="hud-controls">
+                    <button class="hud-ctrl-btn" id="hudBtnPause" onclick="app.togglePause()">⏸️</button>
+                    <button class="hud-ctrl-btn" id="hudBtnSpeed" onclick="app.cycleSpeed()">1.5x</button>
+                    <button class="hud-ctrl-btn" onclick="app.surrenderBattle()">🏳️</button>
+                </div>
+
+                <div class="hud-actions">
+                    <div class="hud-power-slots">
+                        <div class="power-slot" onclick="app.queueSpecial('nuke_item')">
+                            <div class="power-icon">💥</div>
+                            <div class="power-name">NUKE</div>
+                            <div class="power-count" id="pwrNuke">0</div>
+                        </div>
+                        <div class="power-slot" onclick="app.queueSpecial('freeze')">
+                            <div class="power-icon">❄️</div>
+                            <div class="power-name">FREEZE</div>
+                            <div class="power-count" id="pwrFreeze">0</div>
+                        </div>
+                        <div class="power-slot" onclick="app.queueSpecial('reinforce')">
+                            <div class="power-icon">🛡️</div>
+                            <div class="power-name">REINFORCE</div>
+                            <div class="power-count" id="pwrReinforce">0</div>
+                        </div>
+                        <div class="power-slot" onclick="app.queueSpecial('emp')">
+                            <div class="power-icon">⚡</div>
+                            <div class="power-name">EMP</div>
+                            <div class="power-count" id="pwrEmp">0</div>
+                        </div>
+                        <div class="power-slot" onclick="app.queueSpecial('combo')">
+                            <div class="power-icon">🥊</div>
+                            <div class="power-name">COMBO</div>
+                            <div class="power-count" id="pwrCombo">0</div>
+                        </div>
+                    </div>
+                    <div class="hud-reactions">
+                        <button class="emoji-btn" onclick="app.sendEmoji('😈')">😈</button>
+                        <button class="emoji-btn" onclick="app.sendEmoji('🤖')">🤖</button>
+                        <button class="emoji-btn" onclick="app.sendEmoji('🔥')">🔥</button>
+                        <button class="emoji-btn" onclick="app.sendEmoji('💫')">💫</button>
+                        <button class="taunt-btn" onclick="app.sendTaunt('Nice try!')">Nice try!</button>
+                        <button class="taunt-btn" onclick="app.sendTaunt('Too easy!')">Too easy!</button>
+                    </div>
+                </div>
+                
+                <div class="decision-panel red-player" id="decisionPanel2" style="text-align: right;">
+                    <div class="dp-header"><span id="dpName2">Player 2</span> IS THINKING... 👾</div>
+                    <div class="dp-content" id="dpContent2">Waiting for game start...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating emoji display -->
+        <div class="emoji-float-container" id="emojiFloatContainer"></div>
+
+        <!-- Floating taunts -->
+        <div class="taunt-float-container" id="tauntFloatContainer"></div>
+
+        <!-- Floating damage numbers -->
+        <div class="damage-container" id="damageContainer"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN 12: VICTORY / DEFEAT                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenResults" class="screen">
+        <div class="results-overlay">
+            <div class="results-card">
+                <div class="results-confetti" id="resultsConfetti"></div>
+                <div class="results-banner" id="resultsBanner">🏆 VICTORY! 🏆</div>
+                <div class="results-stars" id="resultsStars">
+                    <span class="result-star" id="star1">⭐</span>
+                    <span class="result-star" id="star2">⭐</span>
+                    <span class="result-star" id="star3">⭐</span>
+                </div>
+                <div class="results-summary" id="resultsSummary">
+                    <div class="result-stat"><span class="rs-icon">🪐</span><span class="rs-label">Planets</span><span class="rs-val" id="rsPlnt">5</span></div>
+                    <div class="result-stat"><span class="rs-icon">🚀</span><span class="rs-label">Ships</span><span class="rs-val" id="rsShips">234</span></div>
+                    <div class="result-stat"><span class="rs-icon">💥</span><span class="rs-label">Destroyed</span><span class="rs-val" id="rsDestroyed">89</span></div>
+                    <div class="result-stat"><span class="rs-icon">⏱️</span><span class="rs-label">Turns</span><span class="rs-val" id="rsTurns">142</span></div>
+                </div>
+                <div class="results-rewards" id="resultsRewards">
+                    <div class="reward-item"><span class="reward-icon">🪙</span><span class="reward-amount" id="rwCoins">+50</span></div>
+                    <div class="reward-item"><span class="reward-icon">⭐</span><span class="reward-amount" id="rwXP">+25 XP</span></div>
+                    <div class="reward-item"><span class="reward-icon">🏆</span><span class="reward-amount" id="rwTrophy">+1</span></div>
+                </div>
+                <div class="results-xp-bar">
+                    <div class="results-xp-label">Level <span id="rxLvl">1</span></div>
+                    <div class="results-xp-track"><div class="results-xp-fill" id="rxFill"></div></div>
+                    <div class="results-xp-text" id="rxText">25 / 100 XP</div>
+                </div>
+                <div class="results-btns">
+                    <button class="res-btn primary" onclick="app.playAgain()">🔄 Play Again</button>
+                    <button class="res-btn" onclick="app.showScreen('modes')">🏠 Main Menu</button>
+                    <button class="res-btn" onclick="app.showScreen('shop')">🛒 Shop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- TOAST NOTIFICATIONS                                -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="renderer.js"></script>
+    <script src="heatmap.js"></script>
+    <script src="ui.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

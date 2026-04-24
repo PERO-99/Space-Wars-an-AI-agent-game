@@ -1,0 +1,22 @@
+{
+  "name": "duel_medium",
+  "description": "Medium 1v1 map — 15 planets, balanced gameplay",
+  "num_players": 2,
+  "planets": [
+    {"id": 0,  "x": 80,  "y": 300, "owner": 1, "num_ships": 100, "growth_rate": 5},
+    {"id": 1,  "x": 720, "y": 300, "owner": 2, "num_ships": 100, "growth_rate": 5},
+    {"id": 2,  "x": 200, "y": 150, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 3,  "x": 600, "y": 450, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 4,  "x": 200, "y": 450, "owner": 0, "num_ships": 25,  "growth_rate": 2},
+    {"id": 5,  "x": 600, "y": 150, "owner": 0, "num_ships": 25,  "growth_rate": 2},
+    {"id": 6,  "x": 400, "y": 300, "owner": 0, "num_ships": 50,  "growth_rate": 4},
+    {"id": 7,  "x": 300, "y": 200, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 8,  "x": 500, "y": 400, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 9,  "x": 300, "y": 400, "owner": 0, "num_ships": 35,  "growth_rate": 3},
+    {"id": 10, "x": 500, "y": 200, "owner": 0, "num_ships": 35,  "growth_rate": 3},
+    {"id": 11, "x": 150, "y": 300, "owner": 0, "num_ships": 15,  "growth_rate": 1},
+    {"id": 12, "x": 650, "y": 300, "owner": 0, "num_ships": 15,  "growth_rate": 1},
+    {"id": 13, "x": 400, "y": 100, "owner": 0, "num_ships": 40,  "growth_rate": 3},
+    {"id": 14, "x": 400, "y": 500, "owner": 0, "num_ships": 40,  "growth_rate": 3}
+  ]
+}

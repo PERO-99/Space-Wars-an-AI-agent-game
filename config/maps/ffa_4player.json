@@ -1,0 +1,27 @@
+{
+  "name": "ffa_4player",
+  "description": "4-player free-for-all map — 20 planets",
+  "num_players": 4,
+  "planets": [
+    {"id": 0,  "x": 100, "y": 100, "owner": 1, "num_ships": 100, "growth_rate": 5},
+    {"id": 1,  "x": 700, "y": 100, "owner": 2, "num_ships": 100, "growth_rate": 5},
+    {"id": 2,  "x": 100, "y": 500, "owner": 3, "num_ships": 100, "growth_rate": 5},
+    {"id": 3,  "x": 700, "y": 500, "owner": 4, "num_ships": 100, "growth_rate": 5},
+    {"id": 4,  "x": 250, "y": 100, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 5,  "x": 550, "y": 100, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 6,  "x": 100, "y": 250, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 7,  "x": 700, "y": 250, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 8,  "x": 100, "y": 350, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 9,  "x": 700, "y": 350, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 10, "x": 250, "y": 500, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 11, "x": 550, "y": 500, "owner": 0, "num_ships": 20,  "growth_rate": 2},
+    {"id": 12, "x": 400, "y": 300, "owner": 0, "num_ships": 50,  "growth_rate": 4},
+    {"id": 13, "x": 300, "y": 200, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 14, "x": 500, "y": 200, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 15, "x": 300, "y": 400, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 16, "x": 500, "y": 400, "owner": 0, "num_ships": 30,  "growth_rate": 3},
+    {"id": 17, "x": 400, "y": 150, "owner": 0, "num_ships": 40,  "growth_rate": 3},
+    {"id": 18, "x": 400, "y": 450, "owner": 0, "num_ships": 40,  "growth_rate": 3},
+    {"id": 19, "x": 250, "y": 300, "owner": 0, "num_ships": 25,  "growth_rate": 2}
+  ]
+}

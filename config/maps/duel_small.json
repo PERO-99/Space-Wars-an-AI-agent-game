@@ -1,0 +1,15 @@
+{
+  "name": "duel_small",
+  "description": "Small 1v1 map — 8 planets, fast games",
+  "num_players": 2,
+  "planets": [
+    {"id": 0, "x": 100, "y": 300, "owner": 1, "num_ships": 100, "growth_rate": 5},
+    {"id": 1, "x": 700, "y": 300, "owner": 2, "num_ships": 100, "growth_rate": 5},
+    {"id": 2, "x": 250, "y": 150, "owner": 0, "num_ships": 30, "growth_rate": 3},
+    {"id": 3, "x": 550, "y": 450, "owner": 0, "num_ships": 30, "growth_rate": 3},
+    {"id": 4, "x": 400, "y": 300, "owner": 0, "num_ships": 50, "growth_rate": 4},
+    {"id": 5, "x": 250, "y": 450, "owner": 0, "num_ships": 20, "growth_rate": 2},
+    {"id": 6, "x": 550, "y": 150, "owner": 0, "num_ships": 20, "growth_rate": 2},
+    {"id": 7, "x": 400, "y": 100, "owner": 0, "num_ships": 15, "growth_rate": 1}
+  ]
+}

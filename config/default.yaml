@@ -1,0 +1,122 @@
+# ============================================================
+# Planet Wars Multi-Agent AI System — Default Configuration
+# ============================================================
+
+environment:
+  max_steps: 200
+  num_players: 2
+  default_map: "duel_medium"
+  neutral_growth: true          # Neutral planets produce ships
+  simultaneous_actions: true    # All players act at once
+  ship_speed: 1.0               # Fleet travel speed multiplier
+  
+  # Observation settings
+  observation:
+    normalize: true
+    include_fleets: true
+    max_planets: 30
+    max_fleets: 50
+
+  # Map generation settings
+  map_generation:
+    num_planets_range: [12, 25]
+    map_size: [800, 600]
+    min_planet_distance: 60
+    growth_rate_range: [1, 5]
+    starting_ships_range: [50, 100]
+    neutral_ships_range: [5, 50]
+    symmetry: true               # Symmetric maps for 1v1 fairness
+
+training:
+  # PPO Hyperparameters
+  ppo:
+    learning_rate: 3.0e-4
+    gamma: 0.99                  # Discount factor
+    gae_lambda: 0.95             # GAE parameter
+    clip_epsilon: 0.2            # PPO clipping
+    value_loss_coeff: 0.5
+    entropy_coeff: 0.01          # Exploration bonus
+    max_grad_norm: 0.5           # Gradient clipping
+    num_epochs: 4                # PPO update epochs per batch
+    batch_size: 64
+    rollout_length: 128          # Steps per rollout
+
+  # Self-play settings
+  self_play:
+    enabled: true
+    opponent_pool_size: 20
+    snapshot_interval: 50        # Save opponent snapshot every N iterations
+    sampling_strategy: "prioritized"  # uniform, prioritized, latest
+    heuristic_fraction: 0.2     # Fraction of games vs heuristic agents
+
+  # Curriculum settings
+  curriculum:
+    enabled: true
+    stages:
+      - name: "vs_random"
+        opponent: "random"
+        win_threshold: 0.8
+        min_iterations: 20
+      - name: "vs_greedy"
+        opponent: "greedy"
+        win_threshold: 0.7
+        min_iterations: 30
+      - name: "vs_defensive"
+        opponent: "defensive"
+        win_threshold: 0.7
+        min_iterations: 30
+      - name: "self_play"
+        opponent: "self"
+        win_threshold: null
+        min_iterations: null
+
+  # General training settings
+  num_parallel_envs: 8
+  total_iterations: 1000
+  checkpoint_interval: 25
+  log_interval: 5
+  device: "auto"                 # auto, cpu, cuda
+
+model:
+  # Entity encoder
+  entity_embed_dim: 64
+  entity_hidden_dim: 128
+  
+  # Attention
+  num_attention_heads: 4
+  attention_layers: 2
+  attention_dropout: 0.1
+  
+  # Policy/Value heads
+  policy_hidden_dim: 128
+  value_hidden_dim: 128
+  
+  # Action space
+  num_send_fractions: 4          # 25%, 50%, 75%, 100%
+
+  # Opponent predictor
+  predictor:
+    hidden_dim: 64
+    lstm_layers: 2
+    history_length: 10
+
+evaluation:
+  num_games: 100
+  elo_k_factor: 32
+  elo_initial: 1000
+  benchmark_opponents:
+    - "random"
+    - "greedy"
+    - "defensive"
+    - "aggressive"
+
+visualization:
+  server:
+    host: "localhost"
+    port: 8765
+  render:
+    fps: 30
+    interpolation_steps: 10     # Smooth frames between game steps
+    show_fleet_trails: true
+    show_territory: true
+    show_heatmap: false

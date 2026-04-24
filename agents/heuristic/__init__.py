@@ -1,0 +1,3 @@
+"""
+Heuristic agents package
+"""
