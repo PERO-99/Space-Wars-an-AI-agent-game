@@ -1,53 +1,53 @@
 {
   "global": {
-    "games": 4,
-    "wins": 3,
-    "risk": -0.03,
+    "games": 12,
+    "wins": 6,
+    "risk": 0.18,
     "strategy_perf": {
       "aggressive": {
-        "games": 398,
-        "wins": 214
+        "games": 850,
+        "wins": 665
       },
       "defensive": {
-        "games": 19,
-        "wins": 16
+        "games": 476,
+        "wins": 19
       },
       "balanced": {
-        "games": 32,
-        "wins": 32
+        "games": 250,
+        "wins": 91
       },
       "rush": {
-        "games": 38,
-        "wins": 25
+        "games": 300,
+        "wins": 39
       }
     },
     "opp_style": {
-      "ATTACK": 0,
+      "ATTACK": 110,
       "DEFEND": 0,
       "EXPAND": 0
     }
   },
   "vs": {
     "aggressive": {
-      "games": 5,
+      "games": 8,
       "wins": 0,
       "risk": 0.5,
       "last_match": {
-        "turns": 64,
+        "turns": 139,
         "strategy_counts": {
           "aggressive": 0,
-          "defensive": 36,
+          "defensive": 114,
           "balanced": 0,
-          "rush": 28
+          "rush": 25
         }
       },
       "strategy_perf": {
         "aggressive": {
-          "games": 0,
+          "games": 1,
           "wins": 0
         },
         "defensive": {
-          "games": 0,
+          "games": 385,
           "wins": 0
         },
         "balanced": {
@@ -55,36 +55,36 @@
           "wins": 0
         },
         "rush": {
-          "games": 0,
+          "games": 76,
           "wins": 0
         }
       },
       "opp_style": {
-        "ATTACK": 0,
+        "ATTACK": 142,
         "DEFEND": 0,
         "EXPAND": 0
       }
     },
     "human": {
-      "games": 4,
-      "wins": 3,
-      "risk": -0.21000000000000002,
+      "games": 9,
+      "wins": 6,
+      "risk": -0.24000000000000002,
       "strategy_perf": {
         "aggressive": {
-          "games": 398,
-          "wins": 214
+          "games": 849,
+          "wins": 665
         },
         "defensive": {
-          "games": 19,
-          "wins": 16
+          "games": 91,
+          "wins": 19
         },
         "balanced": {
-          "games": 32,
-          "wins": 32
+          "games": 250,
+          "wins": 91
         },
         "rush": {
-          "games": 38,
-          "wins": 25
+          "games": 224,
+          "wins": 39
         }
       },
       "opp_style": {
@@ -95,10 +95,10 @@
       "last_match": {
         "turns": 200,
         "strategy_counts": {
-          "aggressive": 184,
-          "defensive": 3,
-          "balanced": 0,
-          "rush": 13
+          "aggressive": 177,
+          "defensive": 0,
+          "balanced": 17,
+          "rush": 6
         }
       }
     }

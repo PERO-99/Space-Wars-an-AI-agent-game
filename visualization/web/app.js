@@ -166,6 +166,10 @@ class AudioManager {
         this.master = null;
         this.musicTimer = null;
         this.musicStep = 0;
+        this.unlocked = false;
+        this.pendingTones = [];
+        this.maxPendingTones = 24;
+        this.unlockInFlight = false;
     }
 
     _ensure() {
@@ -180,11 +184,22 @@ class AudioManager {
 
     unlock() {
         this._ensure();
-        if (!this.ctx) return;
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
+        if (!this.ctx || this.unlockInFlight) return;
+        this.unlockInFlight = true;
+        const maybeStart = () => {
+            this.unlocked = true;
+            this.unlockInFlight = false;
+            this._flushPendingTones();
+            if (this.musicEnabled) this.startMusic();
+        };
+
+        if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
+            this.ctx.resume().then(maybeStart).catch(() => {
+                this.unlockInFlight = false;
+            });
+            return;
         }
-        if (this.musicEnabled) this.startMusic();
+        maybeStart();
     }
 
     setSfxEnabled(v) {
@@ -194,12 +209,10 @@ class AudioManager {
     setMusicEnabled(v) {
         this.musicEnabled = !!v;
         if (!this.musicEnabled) this.stopMusic();
-        else this.startMusic();
+        else if (this.unlocked) this.startMusic();
     }
 
-    _tone(freq, dur = 0.08, type = 'triangle', gain = 0.07, when = 0) {
-        if (!this.sfxEnabled && when === 0) return;
-        this._ensure();
+    _emitTone(freq, dur = 0.08, type = 'triangle', gain = 0.07, when = 0) {
         if (!this.ctx || !this.master) return;
         const t0 = this.ctx.currentTime + when;
         const osc = this.ctx.createOscillator();
@@ -213,6 +226,27 @@ class AudioManager {
         g.connect(this.master);
         osc.start(t0);
         osc.stop(t0 + dur + 0.02);
+    }
+
+    _flushPendingTones() {
+        if (!this.ctx || this.ctx.state !== 'running' || !this.pendingTones.length) return;
+        const queued = this.pendingTones.splice(0, this.pendingTones.length);
+        for (const t of queued) {
+            this._emitTone(t.freq, t.dur, t.type, t.gain, 0);
+        }
+    }
+
+    _tone(freq, dur = 0.08, type = 'triangle', gain = 0.07, when = 0, bypassSfxGate = false) {
+        if (!bypassSfxGate && !this.sfxEnabled) return;
+        this._ensure();
+        if (!this.ctx || !this.master) return;
+        if (this.ctx.state !== 'running') {
+            this.pendingTones.push({ freq, dur, type, gain });
+            if (this.pendingTones.length > this.maxPendingTones) this.pendingTones.shift();
+            this.unlock();
+            return;
+        }
+        this._emitTone(freq, dur, type, gain, when);
     }
 
     playUi(kind = 'click') {
@@ -238,16 +272,20 @@ class AudioManager {
 
     startMusic() {
         this._ensure();
-        if (!this.ctx || !this.musicEnabled || this.musicTimer) return;
+        if (!this.ctx || !this.unlocked || !this.musicEnabled || this.musicTimer) return;
         const seq = [220, 247, 277, 330, 294, 247, 196, 247];
         this.musicTimer = setInterval(() => {
             if (!this.musicEnabled) return;
+            if (!this.ctx || this.ctx.state !== 'running') {
+                this.unlock();
+                return;
+            }
             const note = seq[this.musicStep % seq.length];
             this.musicStep += 1;
             // Light sci-fi beeps inspired by crewmate-style ambience.
-            this._tone(note, 0.18, 'triangle', 0.018);
+            this._tone(note, 0.18, 'triangle', 0.018, 0, true);
             if (this.musicStep % 4 === 0) {
-                this._tone(note * 0.5, 0.22, 'sine', 0.012, 0.03);
+                this._tone(note * 0.5, 0.22, 'sine', 0.012, 0.03, true);
             }
         }, 340);
     }
@@ -1768,6 +1806,7 @@ class PlanetWarsApp {
         if (sfx) {
             sfx.checked = this.save.soundEnabled !== false;
             sfx.addEventListener('change', () => {
+                this.audio.unlock();
                 this.save.soundEnabled = !!sfx.checked;
                 persistSave(this.save);
                 this.audio.setSfxEnabled(this.save.soundEnabled);
@@ -1777,6 +1816,7 @@ class PlanetWarsApp {
         if (music) {
             music.checked = this.save.musicEnabled !== false;
             music.addEventListener('change', () => {
+                this.audio.unlock();
                 this.save.musicEnabled = !!music.checked;
                 persistSave(this.save);
                 this.audio.setMusicEnabled(this.save.musicEnabled);
@@ -1790,6 +1830,10 @@ class PlanetWarsApp {
     _bindGlobalUiClicks() {
         if (this._globalClicksBound) return;
         this._globalClicksBound = true;
+        const unlockOnce = () => this.audio.unlock();
+        document.addEventListener('pointerdown', unlockOnce, { passive: true, once: true });
+        document.addEventListener('keydown', unlockOnce, { once: true });
+
         document.addEventListener('click', (e) => {
             this.audio.unlock();
             const t = e.target;
