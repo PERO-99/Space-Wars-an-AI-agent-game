@@ -85,7 +85,7 @@ class GameRunner:
     
     def __init__(self, agent_a_name: str = 'greedy', agent_b_name: str = 'aggressive',
                  map_name: str = 'duel_medium', use_generated_maps: bool = True,
-                 max_turns: int = 200, speed: float = 1.0):
+                 max_turns: int = 200, speed: float = 1.0, handicap: str = 'medium'):
         self.agent_a = get_agent(agent_a_name)
         self.agent_b = get_agent(agent_b_name)
         self.agent_a_name = agent_a_name
@@ -95,6 +95,7 @@ class GameRunner:
         self.max_turns = max_turns
         self.speed = speed
         
+        self.handicap = handicap  # 'easy' | 'medium' | 'hard'
         self.engine = GameEngine(num_players=2, max_turns=max_turns)
         self.renderer = StateRenderer()
         self.reward_calc = RewardCalculator()
@@ -130,13 +131,32 @@ class GameRunner:
             self.state = self.engine.load_map_from_data(map_data)
         else:
             self.state = self.engine.load_map(self.map_name)
+
+        # Hard mode: give AI player 2 a head-start bonus
+        if self.handicap == 'hard' and self.state:
+            for planet in self.state.planets:
+                if planet.owner == 2:
+                    planet.num_ships = int(planet.num_ships * 1.4) + 25
+        # Easy mode: reduce AI player 2 starting ships
+        elif self.handicap == 'easy' and self.state:
+            for planet in self.state.planets:
+                if planet.owner == 2:
+                    planet.num_ships = max(5, int(planet.num_ships * 0.6))
         
         self.recorder.start({
             'agent_a': self.agent_a_name,
             'agent_b': self.agent_b_name,
+            'handicap': self.handicap,
         })
         self.recorder.record_frame(self.state)
         
+        # Notify adaptive agent of difficulty
+        for agent in (self.agent_a, self.agent_b):
+            if hasattr(agent, 'set_difficulty'):
+                try:
+                    agent.set_difficulty(self.handicap)
+                except Exception:
+                    pass
         if hasattr(self.agent_a, 'reset'):
             self.agent_a.reset()
         if hasattr(self.agent_b, 'reset'):
@@ -160,33 +180,78 @@ class GameRunner:
         
         obs_a = self.renderer.render(self.state, 1)
         obs_b = self.renderer.render(self.state, 2)
+
+        # Difficulty: easy caps AI ships sent; hard boosts AI ships sent
+        _ai_ship_ratio = 1.0
+        if self.handicap == 'easy':
+            _ai_ship_ratio = 0.50
+        elif self.handicap == 'hard':
+            _ai_ship_ratio = 1.15
+
+        # --- Human-vs-AI handicap ---
+        # When one side is a human player the AI opponent skips an action
+        # every 3rd turn, giving the human more time to react.
+        is_human_a = isinstance(self.agent_a, HumanAgent)
+        is_human_b = isinstance(self.agent_b, HumanAgent)
+        turn = self.state.current_turn if self.state else 0
+        ai_skip_a = (is_human_b and turn % 3 == 0)   # skip AI-a when human-b
+        ai_skip_b = (is_human_a and turn % 3 == 0)   # skip AI-b when human-a
         
         # Get structured predictions instead of basic actions to forward details to UI
-        if hasattr(self.agent_a, 'predict'):
+        if has_predict := hasattr(self.agent_a, 'predict'):
             actions_dict_a = self.agent_a.predict(self.state, 1, obs_a)
-            actions_a = [
-                (a['from'], a['to'], a['ships'])
-                for a in actions_dict_a
-                if (a.get('from', -1) is not None and a.get('to', -1) is not None
-                    and int(a.get('from', -1)) >= 0 and int(a.get('to', -1)) >= 0
-                    and int(a.get('ships', 0)) > 0)
-            ]
+            if ai_skip_a:
+                actions_a = []
+            else:
+                actions_a = [
+                    (a['from'], a['to'], a['ships'])
+                    for a in actions_dict_a
+                    if (a.get('from', -1) is not None and a.get('to', -1) is not None
+                        and int(a.get('from', -1)) >= 0 and int(a.get('to', -1)) >= 0
+                        and int(a.get('ships', 0)) > 0)
+                ]
         else:
-            actions_a = self.agent_a.select_action(obs_a, self.state, 1)
+            actions_a = [] if ai_skip_a else self.agent_a.select_action(obs_a, self.state, 1)
             actions_dict_a = []
             
         if hasattr(self.agent_b, 'predict'):
             actions_dict_b = self.agent_b.predict(self.state, 2, obs_b)
-            actions_b = [
-                (a['from'], a['to'], a['ships'])
-                for a in actions_dict_b
-                if (a.get('from', -1) is not None and a.get('to', -1) is not None
-                    and int(a.get('from', -1)) >= 0 and int(a.get('to', -1)) >= 0
-                    and int(a.get('ships', 0)) > 0)
-            ]
+            if ai_skip_b:
+                actions_b = []
+            else:
+                actions_b = [
+                    (a['from'], a['to'], a['ships'])
+                    for a in actions_dict_b
+                    if (a.get('from', -1) is not None and a.get('to', -1) is not None
+                        and int(a.get('from', -1)) >= 0 and int(a.get('to', -1)) >= 0
+                        and int(a.get('ships', 0)) > 0)
+                ]
         else:
-            actions_b = self.agent_b.select_action(obs_b, self.state, 2)
+            actions_b = [] if ai_skip_b else self.agent_b.select_action(obs_b, self.state, 2)
             actions_dict_b = []
+
+        # Apply difficulty ship ratio to AI (player 2)
+        def _scale_ships(acts, ratio):
+            if ratio == 1.0:
+                return acts
+            result = []
+            for src, dst, ships in acts:
+                scaled = max(1, int(ships * ratio))
+                result.append((src, dst, scaled))
+            return result
+
+        is_human_a2 = isinstance(self.agent_a, __import__('agents.human_agent', fromlist=['HumanAgent']).HumanAgent) if False else False
+        try:
+            from agents.human_agent import HumanAgent as _HA
+            is_human_a2 = isinstance(self.agent_a, _HA)
+            is_human_b2 = isinstance(self.agent_b, _HA)
+        except Exception:
+            is_human_a2 = is_human_b2 = False
+
+        if not is_human_a2:
+            actions_a = _scale_ships(actions_a, _ai_ship_ratio)
+        if not is_human_b2:
+            actions_b = _scale_ships(actions_b, _ai_ship_ratio)
 
         actions_a = self._apply_status_to_actions(1, actions_a)
         actions_b = self._apply_status_to_actions(2, actions_b)
@@ -413,6 +478,8 @@ class VisualizationServer:
                 agent_b = msg.get('agent_b', 'aggressive')
                 map_name = msg.get('map', 'duel_medium')
                 speed = msg.get('speed', 1.0)
+                handicap = msg.get('agent_handicap', 'medium')
+                max_turns = int(msg.get('max_turns', 200))
                 
                 self.game_runner = GameRunner(
                     agent_a_name=agent_a,
@@ -420,6 +487,8 @@ class VisualizationServer:
                     map_name=map_name,
                     use_generated_maps=(map_name == 'random'),
                     speed=speed,
+                    handicap=handicap,
+                    max_turns=max_turns,
                 )
                 
                 state = self.game_runner.initialize()
@@ -575,6 +644,11 @@ class VisualizationServer:
         
         app = web.Application()
         
+        # Health check for Cloud Run
+        async def health_handler(request):
+            return web.Response(text='OK', status=200)
+        app.router.add_get('/health', health_handler)
+
         # WebSocket route
         import traceback
         
@@ -627,9 +701,12 @@ class VisualizationServer:
 def main():
     """Entry point for the visualization server."""
     import argparse
+    import os
     parser = argparse.ArgumentParser(description='Planet Wars Visualization Server')
     parser.add_argument('--host', default='0.0.0.0')
-    parser.add_argument('--port', type=int, default=8765)
+    # Cloud Run injects PORT env var; CLI arg overrides for local dev
+    default_port = int(os.environ.get('PORT', 8765))
+    parser.add_argument('--port', type=int, default=default_port)
     args = parser.parse_args()
     
     server = VisualizationServer(host=args.host, port=args.port)

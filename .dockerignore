@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+*.egg-info/
+
+# Dev/data files
+replays/
+training/
+tests/
+.git/
+.gemini/
+
+# ML training artifacts (not needed at runtime)
+*.ckpt
+*.pt
+*.pkl
+training/adaptive_memory.json
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log

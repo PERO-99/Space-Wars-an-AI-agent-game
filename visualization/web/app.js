@@ -80,12 +80,24 @@ const CAMPAIGN_LEVELS = [
 ];
 
 const MODE_CONFIG = {
-    quick: { format: 'classic', costCoins: 0 },
-    campaign: { format: 'classic', costCoins: 0 },
-    tournament: { format: 'classic', costCoins: 0 },
-    sandbox: { format: 'classic', costCoins: 0 },
-    ai_vs_me: { format: 'ai_vs_me', costCoins: 0 },
-    character_duel: { format: 'character_duel', costCoins: 40 },
+    quick:          { format: 'classic',         costCoins: 0 },
+    campaign:       { format: 'classic',         costCoins: 0 },
+    tournament:     { format: 'classic',         costCoins: 0 },
+    sandbox:        { format: 'classic',         costCoins: 0 },
+    ai_vs_me:       { format: 'ai_vs_me',        costCoins: 0 },
+    character_duel: { format: 'character_duel',  costCoins: 40 },
+    blitz:          { format: 'blitz',           costCoins: 0, maxTurns: 50 },
+    survival:       { format: 'survival',        costCoins: 0 },
+    king_galaxy:    { format: 'king_galaxy',     costCoins: 0 },
+    conquest:       { format: 'conquest',        costCoins: 0 },
+    mirror:         { format: 'mirror',          costCoins: 0 },
+    defend_core:    { format: 'defend_core',     costCoins: 0 },
+};
+
+const DIFFICULTY_CONFIG = {
+    easy:   { label: 'EASY',   emoji: '🌱', desc: 'AI sends fewer ships', color: 'var(--green)',  handicap: 'easy'  },
+    medium: { label: 'MEDIUM', emoji: '⚔️', desc: 'Balanced challenge',   color: 'var(--gold)',   handicap: 'medium'},
+    hard:   { label: 'HARD',   emoji: '💀', desc: 'AI starts stronger',   color: 'var(--red)',    handicap: 'hard'  },
 };
 
 // ─── SAVE STATE ──────────────────────────────────────────
@@ -125,14 +137,12 @@ function loadSave() {
         const saved = localStorage.getItem('planetwars_save');
         if (saved) {
             const merged = { ...DEFAULT_SAVE, ...JSON.parse(saved) };
-            // Make sure newly-free commanders are available for existing saves
-            const all = COMMANDERS.map(c => c.id);
-            merged.ownedCommanders = Array.from(new Set([...(merged.ownedCommanders || []), ...all]));
-            merged.ownedWeapons = merged.ownedWeapons || [];
-            merged.ownedShields = merged.ownedShields || [];
-            merged.ownedBoosts = merged.ownedBoosts || [];
+            merged.ownedCommanders = Array.from(new Set([...(merged.ownedCommanders || []), ...COMMANDERS.map(c => c.id)]));
+            merged.ownedWeapons  = merged.ownedWeapons  || [];
+            merged.ownedShields  = merged.ownedShields  || [];
+            merged.ownedBoosts   = merged.ownedBoosts   || [];
             merged.ownedSpecials = merged.ownedSpecials || {};
-            merged.ownedThemes = merged.ownedThemes || ['default'];
+            merged.ownedThemes   = merged.ownedThemes   || ['default'];
             return merged;
         }
     } catch(e) {}
@@ -140,8 +150,41 @@ function loadSave() {
 }
 
 function persistSave(save) {
-    try { localStorage.setItem('planetwars_save', JSON.stringify(save)); } catch(e){}
+    try {
+        save._version = 2;
+        save._savedAt = Date.now();
+        localStorage.setItem('planetwars_save', JSON.stringify(save));
+    } catch(e) {}
 }
+
+// Export save as downloadable JSON file
+function exportSave(save) {
+    try {
+        const blob = new Blob([JSON.stringify(save, null, 2)], { type: 'application/json' });
+        const a    = document.createElement('a');
+        a.href     = URL.createObjectURL(blob);
+        a.download = 'planetwars_save.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    } catch(e) { alert('Export failed: ' + e.message); }
+}
+
+// Import save from file input
+function importSave(file, onDone) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            const merged = { ...DEFAULT_SAVE, ...parsed };
+            localStorage.setItem('planetwars_save', JSON.stringify(merged));
+            if (onDone) onDone(merged);
+        } catch(err) { alert('Import failed: ' + err.message); }
+    };
+    reader.readAsText(file);
+}
+
+
 
 // ─── XP & LEVEL SYSTEM ──────────────────────────────────
 
@@ -157,146 +200,272 @@ function addXP(save, amount) {
 }
 
 // ─── Audio (SFX + Music) ───────────────────────────────
+// Always-playing music engine inspired by Hill Climbing Racing / Angry Birds:
+//   • Music starts on first user interaction and NEVER stops
+//   • Smooth 2-second crossfade between menu and battle tracks
+//   • Auto-resumes when tab becomes visible again
+//   • setMusicEnabled() fades in/out gracefully
 
 class AudioManager {
     constructor(sfxEnabled = true, musicEnabled = true) {
-        this.sfxEnabled = !!sfxEnabled;
+        this.sfxEnabled  = !!sfxEnabled;
         this.musicEnabled = !!musicEnabled;
-        this.ctx = null;
+        this.ctx    = null;
         this.master = null;
-        this.musicTimer = null;
-        this.musicStep = 0;
-        this.unlocked = false;
-        this.pendingTones = [];
-        this.maxPendingTones = 24;
-        this.unlockInFlight = false;
+        this.sfxGain   = null;
+        this.musicGain = null;           // live gain node for current track
+        this._trackA   = null;           // setInterval handle — menu
+        this._trackB   = null;           // setInterval handle — battle
+        this._currentTrack = null;       // 'menu' | 'battle'
+        this.unlocked  = false;
+        this._unlocking = false;
+        this._fadeTimer = null;
+
+        // Resume music when page becomes visible again (mobile tab-switch)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(() => {});
+            }
+        });
     }
 
     _ensure() {
         if (this.ctx) return;
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return;
-        this.ctx = new Ctx();
-        this.master = this.ctx.createGain();
-        this.master.gain.value = 0.22;
-        this.master.connect(this.ctx.destination);
+        try {
+            this.ctx = new Ctx();
+            this.master = this.ctx.createGain();
+            this.master.gain.value = 0.85;
+            this.master.connect(this.ctx.destination);
+            this.sfxGain = this.ctx.createGain();
+            this.sfxGain.gain.value = 0.70;
+            this.sfxGain.connect(this.master);
+            this.musicGain = this.ctx.createGain();
+            this.musicGain.gain.value = this.musicEnabled ? 0.28 : 0;
+            this.musicGain.connect(this.master);
+        } catch(e) { console.warn('[Audio]', e); }
     }
 
-    unlock() {
+    // Call from any user-gesture (click, touch, keydown)
+    unlock(autoMusic = true) {
         this._ensure();
-        if (!this.ctx || this.unlockInFlight) return;
-        this.unlockInFlight = true;
-        const maybeStart = () => {
-            this.unlocked = true;
-            this.unlockInFlight = false;
-            this._flushPendingTones();
-            if (this.musicEnabled) this.startMusic();
-        };
-
-        if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
-            this.ctx.resume().then(maybeStart).catch(() => {
-                this.unlockInFlight = false;
-            });
+        if (!this.ctx || this._unlocking) return;
+        if (this.ctx.state === 'running') {
+            if (!this.unlocked) {
+                this.unlocked = true;
+                if (autoMusic && this.musicEnabled && !this._currentTrack) this.startMenuMusic();
+            }
             return;
         }
-        maybeStart();
+        this._unlocking = true;
+        this.ctx.resume().then(() => {
+            this._unlocking = false;
+            this.unlocked   = true;
+            if (autoMusic && this.musicEnabled && !this._currentTrack) this.startMenuMusic();
+        }).catch(() => { this._unlocking = false; });
     }
 
     setSfxEnabled(v) {
         this.sfxEnabled = !!v;
+        if (this.sfxGain) this.sfxGain.gain.value = v ? 0.70 : 0;
+    }
+
+
+    // ── Smooth crossfade between tracks ─────────────────────
+    _crossfadeTo(targetTrack) {
+        if (this._currentTrack === targetTrack) return;
+        if (!this.ctx || !this.musicGain) {
+            // No context yet — just set the track normally
+            if (targetTrack === 'battle') this.startBattleMusic();
+            else this.startMenuMusic();
+            return;
+        }
+        const t = this.ctx.currentTime;
+        const FADE = 2.0; // seconds
+
+        // Fade out current
+        this.musicGain.gain.cancelScheduledValues(t);
+        this.musicGain.gain.setValueAtTime(this.musicGain.gain.value, t);
+        this.musicGain.gain.linearRampToValueAtTime(0, t + FADE * 0.5);
+
+        // Start new track, then fade in
+        if (this._fadeTimer) clearTimeout(this._fadeTimer);
+        this._fadeTimer = setTimeout(() => {
+            if (targetTrack === 'battle') this._startBattleLoop();
+            else this._startMenuLoop();
+            this.musicGain.gain.cancelScheduledValues(this.ctx.currentTime);
+            this.musicGain.gain.setValueAtTime(0, this.ctx.currentTime);
+            this.musicGain.gain.linearRampToValueAtTime(0.28, this.ctx.currentTime + FADE * 0.5);
+        }, FADE * 500);
+    }
+
+    // ── low-level tone emitter ───────────────────────────
+    _tone(freq, dur, type, gain, when = 0, toMusic = false) {
+        this._ensure();
+        if (!this.ctx || this.ctx.state !== 'running') return;
+        const dest = toMusic ? this.musicGain : this.sfxGain;
+        if (!dest) return;
+        const t0 = this.ctx.currentTime + Math.max(0, when);
+        try {
+            const osc = this.ctx.createOscillator();
+            const g   = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.value = Math.max(20, freq);
+            g.gain.setValueAtTime(0.0001, t0);
+            g.gain.exponentialRampToValueAtTime(Math.max(0.0001, gain), t0 + 0.012);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(0.03, dur));
+            osc.connect(g); g.connect(dest);
+            osc.start(t0); osc.stop(t0 + dur + 0.06);
+        } catch(e) {}
+    }
+
+    // ── noise burst ──────────────────────────────────────
+    _noise(dur, gain, when = 0) {
+        this._ensure();
+        if (!this.ctx || this.ctx.state !== 'running') return;
+        try {
+            const bufLen = Math.ceil(this.ctx.sampleRate * dur);
+            const buf  = this.ctx.createBuffer(1, bufLen, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+            const src = this.ctx.createBufferSource();
+            src.buffer = buf;
+            const g  = this.ctx.createGain();
+            const t0 = this.ctx.currentTime + when;
+            g.gain.setValueAtTime(gain, t0);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+            src.connect(g); g.connect(this.sfxGain);
+            src.start(t0); src.stop(t0 + dur);
+        } catch(e) {}
+    }
+
+    // ── PUBLIC SFX ───────────────────────────────────────
+    playUi(kind = 'click') {
+        if (!this.sfxEnabled) return;
+        switch (kind) {
+            case 'click':
+                this._tone(680, 0.05, 'triangle', 0.45);
+                this._tone(900, 0.04, 'triangle', 0.25, 0.03);
+                break;
+            case 'tab':
+                this._tone(440, 0.05, 'square', 0.30);
+                this._tone(660, 0.06, 'triangle', 0.25, 0.04);
+                break;
+            case 'launch':
+                this._noise(0.12, 0.28);
+                this._tone(180, 0.12, 'sawtooth', 0.40);
+                this._tone(280, 0.10, 'sawtooth', 0.30, 0.06);
+                this._tone(500, 0.12, 'triangle', 0.25, 0.14);
+                this._tone(800, 0.08, 'triangle', 0.18, 0.24);
+                break;
+            case 'fleet_land':
+                this._noise(0.08, 0.45);
+                this._tone(120, 0.15, 'sawtooth', 0.35);
+                this._tone(60,  0.20, 'sine',     0.40, 0.05);
+                break;
+            case 'hit':
+                this._noise(0.06, 0.50);
+                this._tone(150, 0.08, 'sawtooth', 0.40);
+                this._tone(80,  0.14, 'sine',     0.35, 0.04);
+                break;
+            case 'special':
+                this._tone(900, 0.04, 'square',   0.55);
+                this._tone(1200, 0.08, 'triangle', 0.45, 0.05);
+                this._tone(600, 0.14, 'sawtooth', 0.35, 0.12);
+                this._tone(400, 0.18, 'sine',     0.30, 0.24);
+                break;
+            case 'nuke':
+                this._noise(0.25, 0.65);
+                this._tone(60,  0.40, 'sine',     0.55);
+                this._tone(45,  0.50, 'sine',     0.45, 0.05);
+                this._tone(1800, 0.08, 'triangle', 0.25, 0.12);
+                break;
+            case 'freeze':
+                this._tone(1800, 0.06, 'triangle', 0.40);
+                this._tone(2200, 0.08, 'triangle', 0.35, 0.06);
+                this._tone(1400, 0.12, 'triangle', 0.28, 0.12);
+                this._tone(900,  0.18, 'sine',     0.20, 0.20);
+                break;
+            case 'emp':
+                this._tone(220, 0.05, 'square', 0.60);
+                this._tone(440, 0.04, 'square', 0.55, 0.03);
+                this._noise(0.10, 0.35, 0.08);
+                this._tone(110, 0.20, 'sawtooth', 0.38, 0.12);
+                break;
+            case 'reinforce':
+                this._tone(320, 0.10, 'sine', 0.35);
+                this._tone(480, 0.14, 'sine', 0.30, 0.08);
+                this._tone(640, 0.16, 'triangle', 0.28, 0.18);
+                this._tone(800, 0.18, 'triangle', 0.22, 0.30);
+                break;
+            case 'emoji':
+                this._tone(720, 0.05, 'triangle', 0.40);
+                this._tone(960, 0.06, 'triangle', 0.30, 0.05);
+                break;
+            case 'win':
+                [523,659,784,987,1047].forEach((f,i) =>
+                    this._tone(f, 0.22, 'triangle', 0.42, i * 0.11));
+                this._noise(0.10, 0.20, 0.20);
+                break;
+            case 'lose':
+                [440,370,311,233,185].forEach((f,i) =>
+                    this._tone(f, 0.28, 'sawtooth', 0.38, i * 0.13));
+                this._noise(0.15, 0.25, 0.10);
+                break;
+        }
+    }
+
+    // ── MUSIC ENGINE ─────────────────────────────────────
+    
+    _initHTMLAudio() {
+        if (this._htmlAudioInitialized) return;
+        this._htmlAudioInitialized = true;
+        this.bgmMenu = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3");
+        this.bgmMenu.loop = true;
+        this.bgmBattle = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3");
+        this.bgmBattle.loop = true;
+    }
+
+    startMenuMusic() {
+        if (!this.musicEnabled) return;
+        this._initHTMLAudio();
+        this._currentTrack = 'menu';
+        if (this.bgmBattle) this.bgmBattle.pause();
+        this.bgmMenu.play().catch(() => {});
+    }
+
+    startBattleMusic() {
+        if (!this.musicEnabled) return;
+        this._initHTMLAudio();
+        this._currentTrack = 'battle';
+        if (this.bgmMenu) this.bgmMenu.pause();
+        this.bgmBattle.play().catch(() => {});
+    }
+
+    stopMusic() {
+        if (this.bgmMenu) this.bgmMenu.pause();
+        if (this.bgmBattle) this.bgmBattle.pause();
+        this._currentTrack = null;
     }
 
     setMusicEnabled(v) {
         this.musicEnabled = !!v;
-        if (!this.musicEnabled) this.stopMusic();
-        else if (this.unlocked) this.startMusic();
-    }
-
-    _emitTone(freq, dur = 0.08, type = 'triangle', gain = 0.07, when = 0) {
-        if (!this.ctx || !this.master) return;
-        const t0 = this.ctx.currentTime + when;
-        const osc = this.ctx.createOscillator();
-        const g = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.value = Math.max(40, freq);
-        g.gain.setValueAtTime(0.0001, t0);
-        g.gain.exponentialRampToValueAtTime(gain, t0 + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-        osc.connect(g);
-        g.connect(this.master);
-        osc.start(t0);
-        osc.stop(t0 + dur + 0.02);
-    }
-
-    _flushPendingTones() {
-        if (!this.ctx || this.ctx.state !== 'running' || !this.pendingTones.length) return;
-        const queued = this.pendingTones.splice(0, this.pendingTones.length);
-        for (const t of queued) {
-            this._emitTone(t.freq, t.dur, t.type, t.gain, 0);
+        if (!v) {
+            this.stopMusic();
+        } else {
+            if (this._currentTrack === 'battle') this.startBattleMusic();
+            else this.startMenuMusic();
         }
     }
 
-    _tone(freq, dur = 0.08, type = 'triangle', gain = 0.07, when = 0, bypassSfxGate = false) {
-        if (!bypassSfxGate && !this.sfxEnabled) return;
-        this._ensure();
-        if (!this.ctx || !this.master) return;
-        if (this.ctx.state !== 'running') {
-            this.pendingTones.push({ freq, dur, type, gain });
-            if (this.pendingTones.length > this.maxPendingTones) this.pendingTones.shift();
-            this.unlock();
-            return;
-        }
-        this._emitTone(freq, dur, type, gain, when);
-    }
-
-    playUi(kind = 'click') {
-        if (!this.sfxEnabled) return;
-        if (kind === 'click') {
-            this._tone(520, 0.05, 'triangle', 0.045);
-        } else if (kind === 'tab') {
-            this._tone(430, 0.05, 'square', 0.04);
-            this._tone(640, 0.06, 'triangle', 0.04, 0.03);
-        } else if (kind === 'launch') {
-            this._tone(220, 0.12, 'sawtooth', 0.055);
-            this._tone(320, 0.12, 'triangle', 0.045, 0.08);
-            this._tone(520, 0.12, 'triangle', 0.035, 0.16);
-        } else if (kind === 'special') {
-            this._tone(760, 0.05, 'square', 0.06);
-            this._tone(980, 0.08, 'triangle', 0.05, 0.04);
-        } else if (kind === 'hit') {
-            this._tone(170, 0.05, 'sawtooth', 0.05);
-        } else if (kind === 'emoji') {
-            this._tone(660, 0.05, 'triangle', 0.04);
-        }
-    }
-
-    startMusic() {
-        this._ensure();
-        if (!this.ctx || !this.unlocked || !this.musicEnabled || this.musicTimer) return;
-        const seq = [220, 247, 277, 330, 294, 247, 196, 247];
-        this.musicTimer = setInterval(() => {
-            if (!this.musicEnabled) return;
-            if (!this.ctx || this.ctx.state !== 'running') {
-                this.unlock();
-                return;
-            }
-            const note = seq[this.musicStep % seq.length];
-            this.musicStep += 1;
-            // Light sci-fi beeps inspired by crewmate-style ambience.
-            this._tone(note, 0.18, 'triangle', 0.018, 0, true);
-            if (this.musicStep % 4 === 0) {
-                this._tone(note * 0.5, 0.22, 'sine', 0.012, 0.03, true);
-            }
-        }, 340);
-    }
-
-    stopMusic() {
-        if (this.musicTimer) {
-            clearInterval(this.musicTimer);
-            this.musicTimer = null;
-        }
-    }
+    // legacy shim
+    startMusic() { this.startMenuMusic(); }
 }
+
+
+
+
 
 // ─── BACKGROUND RENDERER ────────────────────────────────
 
@@ -637,17 +806,23 @@ class PlanetWarsApp {
 
         this._human = { active: false, playerId: null, selectedPlanetId: null };
         this._humanHandlers = { pointerDown: null };
+        this.difficulty = 'medium';  // 'easy' | 'medium' | 'hard'
 
         this._connectWS();
         this._populateScreens();
         this._initSpeedBtns();
+        this._initDifficultyBtns();
         this._initSettingsBindings();
         this._bindGlobalUiClicks();
         this._applyTheme();
         this._updateTitleBar();
 
+        // Start menu music on first interaction — handled in _bindGlobalUiClicks
         // Background animation loop
         this._bgLoop();
+
+        // Auto-save every 30s
+        setInterval(() => persistSave(this.save), 30000);
     }
 
     // ─── Screen Navigation ───────────────────────────
@@ -666,6 +841,13 @@ class PlanetWarsApp {
         // Hide bg canvas during battle so game canvas shows
         const bgCanvas = document.getElementById('bgCanvas');
         if (bgCanvas) bgCanvas.style.display = (id === 'battle') ? 'none' : 'block';
+
+        // Switch music tracks
+        if (id === 'battle') {
+            this.audio.startBattleMusic();
+        } else if (['title','modes','commanders','armory','shop'].includes(id)) {
+            if (this.audio._currentTrack === 'battle') this.audio.startMenuMusic();
+        }
 
         // Refresh data on certain screens
         if (id === 'title') this._updateTitleBar();
@@ -762,6 +944,17 @@ class PlanetWarsApp {
         if (fills[2]) fills[2].style.width = commander.eco + '%';
     }
 
+    _initDifficultyBtns() {
+        document.querySelectorAll('.diff-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.diff-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.difficulty = btn.dataset.diff;
+                this.audio.playUi('click');
+            });
+        });
+    }
+
     _initSpeedBtns() {
         document.querySelectorAll('.spd-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -770,6 +963,21 @@ class PlanetWarsApp {
                 this.gameSpeed = parseFloat(btn.dataset.speed);
             });
         });
+    }
+
+    _initSettingsBindings() {
+        const musicToggle = document.getElementById('musicToggle');
+        const sfxToggle = document.getElementById('sfxToggle');
+        if (musicToggle) musicToggle.checked = this.save.musicEnabled;
+        if (sfxToggle) sfxToggle.checked = this.save.soundEnabled;
+    }
+
+    updateUiFromSave() {
+        this._updateTitleBar();
+        this._applyTheme();
+        this._initSettingsBindings();
+        this.audio.setMusicEnabled(this.save.musicEnabled);
+        this.audio.setSfxEnabled(this.save.soundEnabled);
     }
 
     // ─── Launch Battle ───────────────────────────────
@@ -851,6 +1059,8 @@ class PlanetWarsApp {
                 agent_b: this.battleAgent2,
                 map: map,
                 speed: this.gameSpeed,
+                agent_handicap: this.difficulty,
+                max_turns: (MODE_CONFIG[this.selectedMode] || {}).maxTurns || 200,
             }));
         } else {
             this._hideLoading();
@@ -969,7 +1179,9 @@ class PlanetWarsApp {
             }));
         }
 
-        this.audio.playUi('special');
+        // Play the correct SFX for each special
+        const sfxMap = { nuke_item:'nuke', freeze:'freeze', emp:'emp', reinforce:'reinforce', combo:'nuke' };
+        this.audio.playUi(sfxMap[specialId] || 'special');
         this.showToast('💥 ' + specialId.toUpperCase() + ' activated!', 'success');
         this.sendEmoji('💥');
     }
@@ -1034,6 +1246,7 @@ class PlanetWarsApp {
     }
 
     _spawnEmoji(emoji, owner = 'human') {
+        return; // Disabled to prevent distraction
         const container = document.getElementById('emojiFloatContainer');
         if (!container) return;
         const el = document.createElement('div');
@@ -1046,6 +1259,7 @@ class PlanetWarsApp {
     }
 
     _spawnTaunt(text, owner = 'ai') {
+        return; // Disabled to prevent distraction
         const container = document.getElementById('tauntFloatContainer');
         if (!container) return;
         const el = document.createElement('div');
@@ -1123,6 +1337,7 @@ class PlanetWarsApp {
                 // Damage numbers for combat
                 if (msg.state.combat_log) {
                     let hadHit = false;
+                    let hadLaunch = false;
                     for (const c of msg.state.combat_log) {
                         if ((c.ships_destroyed || 0) > 0) {
                             hadHit = true;
@@ -1135,8 +1350,11 @@ class PlanetWarsApp {
                                 }
                             }
                         }
+                        // fleet_land plays when a planet changes owner
+                        if (c.result_owner !== undefined && c.result_owner !== c.prev_owner) hadLaunch = true;
                     }
                     if (hadHit) this.audio.playUi('hit');
+                    if (hadLaunch) this.audio.playUi('fleet_land');
                 }
                 break;
 
@@ -1300,6 +1518,10 @@ class PlanetWarsApp {
         this._renderRunning = false;
         const playerWon = winner === 1;
         const isDraw = !winner || winner === 0;
+
+        // Play win/lose sound
+        if (playerWon) this.audio.playUi('win');
+        else if (!isDraw) this.audio.playUi('lose');
 
         // Calculate stars
         const maxTurns = state?.max_turns || 200;
@@ -1830,15 +2052,18 @@ class PlanetWarsApp {
     _bindGlobalUiClicks() {
         if (this._globalClicksBound) return;
         this._globalClicksBound = true;
-        const unlockOnce = () => this.audio.unlock();
-        document.addEventListener('pointerdown', unlockOnce, { passive: true, once: true });
-        document.addEventListener('keydown', unlockOnce, { once: true });
+
+        // Unlock audio on EVERY pointer/key event (not just the first one)
+        // Browsers can re-suspend the AudioContext when the tab loses focus.
+        document.addEventListener('pointerdown', () => this.audio.unlock(), { passive: true });
+        document.addEventListener('keydown',     () => this.audio.unlock(), { passive: true });
+        document.addEventListener('touchstart',  () => this.audio.unlock(), { passive: true });
 
         document.addEventListener('click', (e) => {
-            this.audio.unlock();
+            this.audio.unlock(); // re-ensure context is running
             const t = e.target;
             if (!(t instanceof HTMLElement)) return;
-            if (t.closest('.nav-btn,.back-btn,.armory-tab,.mode-card,.res-btn,.format-pill,.hud-ctrl-btn,.power-slot,.emoji-btn,.taunt-btn,.hint-btn')) {
+            if (t.closest('.nav-btn,.back-btn,.armory-tab,.mode-card,.res-btn,.format-pill,.hud-ctrl-btn,.power-slot,.emoji-btn,.taunt-btn,.hint-btn,.mega-btn')) {
                 this.audio.playUi('click');
             }
         }, { passive: true });
@@ -1939,7 +2164,8 @@ class PlanetWarsApp {
             }
 
             if (!best) return;
-            const clickR = (14 + (best.growth_rate || 1) * 4) * (this.renderer.scale || 1) * 1.25;
+            // Larger hit radius makes it easier to tap/click planets
+            const clickR = (18 + (best.growth_rate || 1) * 5) * (this.renderer.scale || 1) * 1.8;
             if (bestDist > clickR) return;
 
             const pid = this._human.playerId;
@@ -1980,7 +2206,8 @@ class PlanetWarsApp {
                 return;
             }
 
-            const frac = e.shiftKey ? 0.85 : 0.5;
+            // Shift = 70% of fleet, normal click = 50% (easier for human)
+            const frac = e.shiftKey ? 0.70 : 0.50;
             const maxSend = Math.max(0, (src.num_ships || 0) - 1);
             const ships = Math.max(1, Math.floor(maxSend * frac));
             if (ships <= 0) {
@@ -2008,7 +2235,6 @@ class PlanetWarsApp {
                 to,
                 ships,
             }));
-            this.showToast(`🚀 Launched ${ships} ships`, 'success', 1200);
         }
     }
 
@@ -2058,6 +2284,18 @@ class PlanetWarsApp {
         toast.textContent = message;
         container.appendChild(toast);
         setTimeout(() => { toast.classList.add('exit'); setTimeout(() => toast.remove(), 300); }, duration);
+    }
+
+    toggleMusic(enabled) {
+        this.save.musicEnabled = enabled;
+        this.audio.setMusicEnabled(enabled);
+        persistSave(this.save);
+    }
+
+    toggleSfx(enabled) {
+        this.save.soundEnabled = enabled;
+        this.audio.setSfxEnabled(enabled);
+        persistSave(this.save);
     }
 }
 

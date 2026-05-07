@@ -1,0 +1,7 @@
+# Production requirements — no heavy ML deps (torch, tensorboard)
+# These are needed only for training; the game server doesn't use them.
+aiohttp>=3.9.0
+aiohttp-cors>=0.7.0
+websockets>=12.0
+numpy>=1.24.0
+pyyaml>=6.0

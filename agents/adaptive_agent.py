@@ -34,6 +34,11 @@ class AdaptiveAgent(BaseAgent):
         # Match context (set by server/GameRunner)
         self.opponent_name: Optional[str] = None
 
+        # Difficulty: 'easy' | 'medium' | 'hard'
+        self.difficulty = 'medium'
+        self._ship_ratio = 1.0      # applied when returning actions
+        self._style_min_obs = 6     # observations before counter-play kicks in
+
         # Persistent learning memory
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.memory_path = os.path.join(project_root, 'training', 'adaptive_memory.json')
@@ -58,6 +63,19 @@ class AdaptiveAgent(BaseAgent):
 
     def set_matchup(self, opponent_name: str | None) -> None:
         self.opponent_name = opponent_name
+
+    def set_difficulty(self, level: str) -> None:
+        """Apply difficulty handicap — called by server before each match."""
+        self.difficulty = level
+        if level == 'easy':
+            self._ship_ratio = 0.50
+            self._style_min_obs = 12  # slower to adapt on easy
+        elif level == 'hard':
+            self._ship_ratio = 1.15
+            self._style_min_obs = 4   # reacts faster on hard
+        else:
+            self._ship_ratio = 1.0
+            self._style_min_obs = 6
 
     def _load_memory(self) -> dict:
         default_memory = {
@@ -195,7 +213,7 @@ class AdaptiveAgent(BaseAgent):
     def _counter_from_style(self, profile: dict) -> Optional[int]:
         style = profile.get('opp_style') or {}
         total = sum(int(style.get(k, 0)) for k in ('ATTACK', 'DEFEND', 'EXPAND'))
-        if total < 8:
+        if total < self._style_min_obs:
             return None
         attack_p = int(style.get('ATTACK', 0)) / total
         defend_p = int(style.get('DEFEND', 0)) / total
@@ -398,6 +416,12 @@ class AdaptiveAgent(BaseAgent):
         
         active_agent = self.behaviors[strategy_idx]
         structured_actions = active_agent.predict(state, player_id, observation)
+
+        # Apply difficulty ship scaling
+        if self._ship_ratio != 1.0:
+            for act in structured_actions:
+                if act.get('ships', 0) > 0:
+                    act['ships'] = max(1, int(act['ships'] * self._ship_ratio))
         
         brain_state = {
             "mode": current_strategy_name,

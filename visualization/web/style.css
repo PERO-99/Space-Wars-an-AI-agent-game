@@ -120,6 +120,15 @@ select{font-family:var(--font);color:var(--text)}
 .mode-theme-sandbox{background:linear-gradient(150deg,rgba(123,97,255,0.16),rgba(16,8,30,0.9))}
 .mode-theme-astronaut{background:linear-gradient(150deg,rgba(0,212,255,0.18),rgba(7,20,42,0.9))}
 .mode-theme-characters{background:linear-gradient(150deg,rgba(255,79,109,0.18),rgba(28,8,20,0.9))}
+/* New Mode Themes */
+.mode-theme-blitz{background:linear-gradient(150deg,rgba(255,107,53,0.22),rgba(30,10,5,0.9))}
+.mode-theme-survival{background:linear-gradient(150deg,rgba(255,40,80,0.22),rgba(28,4,10,0.9))}
+.mode-theme-king{background:linear-gradient(150deg,rgba(251,191,36,0.25),rgba(28,20,4,0.9))}
+.mode-theme-conquest{background:linear-gradient(150deg,rgba(123,97,255,0.22),rgba(12,6,28,0.9))}
+.mode-theme-mirror{background:linear-gradient(150deg,rgba(0,212,255,0.18),rgba(4,16,28,0.9))}
+.mode-theme-defend{background:linear-gradient(150deg,rgba(52,211,153,0.20),rgba(4,18,12,0.9))}
+
+
 
 .mode-theme-astronaut::before{background:radial-gradient(circle at 20% 25%,rgba(255,255,255,0.2),transparent 45%),radial-gradient(circle at 75% 80%,rgba(0,212,255,0.2),transparent 50%)}
 .mode-theme-characters::before{background:radial-gradient(circle at 15% 20%,rgba(255,79,109,0.24),transparent 45%),radial-gradient(circle at 80% 75%,rgba(251,191,36,0.18),transparent 50%)}
@@ -168,6 +177,18 @@ select{font-family:var(--font);color:var(--text)}
 .format-pill{padding:7px 12px;border-radius:var(--pill);border:1px solid var(--border);background:rgba(255,255,255,0.03);font-size:11px;letter-spacing:1px;font-weight:700;color:var(--text2);transition:all .2s var(--ease)}
 .format-pill:hover{transform:translateY(-2px);border-color:var(--border2);color:var(--text)}
 .format-pill.active{background:linear-gradient(135deg,rgba(0,212,255,0.18),rgba(79,140,255,0.14));border-color:rgba(0,212,255,0.38);color:var(--cyan);box-shadow:0 6px 20px rgba(0,212,255,0.15)}
+
+/* ─── DIFFICULTY BAR ─────────────────────────────── */
+.difficulty-bar{display:flex;align-items:center;gap:16px;padding:10px 20px;background:rgba(0,0,0,0.15);border-top:1px solid var(--border)}
+.diff-pill-wrap{display:flex;gap:8px}
+.diff-pill{display:flex;flex-direction:column;align-items:center;padding:8px 18px;border-radius:var(--pill);border:1px solid var(--border);background:rgba(255,255,255,0.03);font-size:12px;font-weight:800;letter-spacing:1px;color:var(--text2);transition:all .2s var(--ease);cursor:pointer;min-width:80px}
+.diff-pill .diff-sub{font-size:9px;font-weight:600;letter-spacing:0.5px;color:var(--text3);margin-top:2px}
+.diff-pill:hover{transform:translateY(-2px);border-color:var(--border2)}
+.diff-pill.active[data-diff="easy"]{background:rgba(52,211,153,0.12);border-color:rgba(52,211,153,0.4);color:var(--green);box-shadow:0 4px 16px rgba(52,211,153,0.15)}
+.diff-pill.active[data-diff="medium"]{background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.4);color:var(--gold);box-shadow:0 4px 16px rgba(251,191,36,0.15)}
+.diff-pill.active[data-diff="hard"]{background:rgba(255,79,109,0.12);border-color:rgba(255,79,109,0.4);color:var(--red);box-shadow:0 4px 16px rgba(255,79,109,0.15)}
+
+
 
 /* ─── Human Controls Hint ─────────────────────────── */
 .human-hint{position:absolute;left:50%;top:92px;transform:translateX(-50%);z-index:6;max-width:min(720px,92vw);padding:10px 14px;border-radius:var(--pill);background:rgba(12,18,40,0.72);border:1px solid var(--border);backdrop-filter:blur(18px);font-weight:700;letter-spacing:0.4px;color:var(--text)}
@@ -590,3 +611,101 @@ select{font-family:var(--font);color:var(--text)}
     100% { transform: translateY(0px) rotateY(360deg); }
 }
 
+
+
+/* ─────────────────────────────────────────────────────
+   RESPONSIVE DESIGN — Mobile & Tablet
+   ───────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .mode-grid{grid-template-columns:repeat(2,1fr);gap:12px;padding:14px}
+    .mode-icon{font-size:36px;margin-bottom:8px}
+    .mode-name{font-size:15px}
+    .setup-container{flex-direction:column;gap:12px;padding:12px}
+    .setup-side{padding:14px}
+    .setup-vs{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:0 8px;min-width:unset}
+    .hud-p-avatar{width:32px;height:32px;font-size:20px}
+    .hud-health-bar{width:100px}
+    .taunt-btn{display:none}
+    .human-hint{top:82px;max-width:min(92vw,520px)}
+    .results-summary{grid-template-columns:repeat(2,1fr)}
+    .diff-pill-wrap{flex-wrap:wrap}
+    .format-pill-wrap{flex-wrap:wrap}
+}
+
+@media (max-width: 480px) {
+    html,body{font-size:13px}
+    .mode-grid{grid-template-columns:1fr;gap:10px;padding:10px}
+    .mode-card{padding:18px 14px}
+    .mode-icon{font-size:32px}
+    .game-title{font-size:clamp(32px,12vw,56px);letter-spacing:3px}
+    .game-subtitle{font-size:12px;letter-spacing:4px}
+    .play-btn{padding:14px 32px;font-size:16px}
+    .title-bottom-nav{gap:2px;padding:10px 8px}
+    .nav-btn{padding:6px 10px;min-width:52px}
+    .nav-icon{font-size:18px}
+    .nav-label{font-size:9px}
+    .currency-item{padding:4px 8px;font-size:12px}
+    .setup-side{width:100%;padding:12px}
+    .agent-select,.agent-stats{max-width:100%}
+    .setup-avatar-big{font-size:40px;margin:4px 0}
+    .vs-emblem{font-size:24px}
+    .battle-format-bar,.difficulty-bar{flex-direction:column;gap:8px;align-items:flex-start}
+    .diff-pill{padding:8px 14px;min-width:72px;font-size:11px}
+    .diff-pill-wrap{flex-wrap:wrap;gap:6px}
+    .loadout-bar{flex-wrap:wrap;gap:8px;padding:8px 12px}
+    .loadout-slots{gap:6px}
+    .loadout-slot{padding:6px 10px;min-width:52px}
+    .loadout-slot span{font-size:16px}
+    .hud-top{padding:4px 8px;gap:4px}
+    .hud-p-avatar{width:28px;height:28px;font-size:16px}
+    .hud-health-bar{width:80px;height:12px}
+    .hud-health-text{font-size:9px}
+    .hud-p-name{font-size:10px}
+    .hud-p-stats{font-size:10px}
+    .hud-center{gap:0}
+    .hud-turn-ring{width:36px;height:36px}
+    .hud-turn-num{font-size:11px}
+    .hud-bottom{padding:6px 8px;gap:6px}
+    .hud-controls{gap:4px}
+    .hud-ctrl-btn{width:34px;height:34px;font-size:15px}
+    .hud-emojis{gap:2px}
+    .emoji-btn{font-size:18px;padding:4px}
+    .power-slot{padding:4px 8px;min-width:38px}
+    .power-icon{font-size:14px}
+    .power-name{font-size:7px}
+    .power-count{width:14px;height:14px;font-size:8px}
+    .emoji-float{font-size:36px}
+    .human-hint{top:70px;padding:6px 10px;font-size:12px}
+    .me-battle-tag{font-size:9px;padding:4px 10px;top:68px}
+    .hint-btn{padding:4px 8px;font-size:9px}
+    .ai-brain-panel{width:180px;bottom:80px;right:8px;padding:6px 10px}
+    .brain-header{font-size:11px}
+    .brain-row{font-size:10px}
+    .decision-panel{min-width:unset;max-width:220px;padding:6px 10px}
+    .results-card{padding:24px 16px}
+    .results-banner{font-size:22px}
+    .results-stars{font-size:28px}
+    .results-summary{grid-template-columns:repeat(2,1fr);gap:8px}
+    .results-rewards{gap:12px}
+    .results-btns{flex-direction:column;gap:6px}
+    .res-btn{width:100%;text-align:center}
+    .commander-grid,.armory-grid,.shop-grid,.theme-grid{grid-template-columns:repeat(2,1fr);gap:8px;padding:10px}
+    .item-card{padding:12px 10px}
+    .item-card .card-icon{font-size:30px}
+    .toast-container{top:50px;right:8px;left:8px}
+    .toast{font-size:12px;padding:10px 14px}
+    .screen-title{font-size:14px;letter-spacing:2px}
+    .back-btn{font-size:12px;padding:6px 10px}
+}
+
+#gameCanvas{touch-action:none}
+canvas{-webkit-tap-highlight-color:transparent}
+
+@media (max-height:500px) and (orientation:landscape) {
+    .hud-top{padding:2px 8px}
+    .hud-bottom{padding:2px 8px}
+    .hud-p-avatar{width:24px;height:24px;font-size:14px}
+    .hud-health-bar{width:70px}
+    .ai-brain-panel,.human-hint{display:none}
+}

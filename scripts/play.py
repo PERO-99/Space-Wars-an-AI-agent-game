@@ -11,6 +11,10 @@ import os
 import sys
 import argparse
 
+# Fix Windows console encoding for emoji output
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from visualization.server import VisualizationServer
@@ -24,8 +28,8 @@ def main():
     
     args = parser.parse_args()
     
-    print("\n🪐 PLANET WARS — Live Battle Viewer")
-    print("="  * 40)
+    print("\n[*] PLANET WARS -- Live Battle Viewer")
+    print("=" * 40)
     
     server = VisualizationServer(host=args.host, port=args.port)
     server.start()

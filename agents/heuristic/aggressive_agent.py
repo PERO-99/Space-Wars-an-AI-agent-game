@@ -54,7 +54,7 @@ class AggressiveAgent(BaseAgent):
         
         # Send ships from each owned planet to the best target it can reach
         for my_planet in my_planets:
-            if my_planet.num_ships <= 2:
+            if my_planet.num_ships <= 25:
                 continue
             
             # Find best target for this planet
@@ -70,8 +70,8 @@ class AggressiveAgent(BaseAgent):
                     best_target = target
             
             if best_target:
-                # Send 90% of ships (keep small garrison)
-                send = max(1, int(my_planet.num_ships * 0.9))
+                # Send 60% of ships (keep a decent garrison so human has a chance)
+                send = int(my_planet.num_ships * 0.60)
                 
                 reason = "All out rush towards high value target" if best_target.owner > 0 else "Aggressive early expansion"
                 conf = min(0.99, 0.6 + (my_planet.num_ships / max(1, best_target.num_ships)) * 0.1)

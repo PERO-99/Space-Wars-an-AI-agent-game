@@ -145,8 +145,52 @@
                 <div class="mode-badge story">CHEAP</div>
                 <div class="mode-reward">🪙 40 entry • 🪙 120 reward</div>
             </div>
+            <!-- NEW MODES -->
+            <div class="mode-card mode-theme-blitz" onclick="app.selectMode('blitz')">
+                <div class="mode-icon">💥</div>
+                <div class="mode-name">Blitz</div>
+                <div class="mode-desc">50-turn max! Frantic all-out war on a tiny map. Speed wins.</div>
+                <div class="mode-badge" style="background:rgba(255,107,53,0.15);color:#ff6b35;border:1px solid rgba(255,107,53,0.3)">FAST</div>
+                <div class="mode-reward">🪙 60 per win</div>
+            </div>
+            <div class="mode-card mode-theme-survival" onclick="app.selectMode('survival')">
+                <div class="mode-icon">☠️</div>
+                <div class="mode-name">Survival</div>
+                <div class="mode-desc">You vs 3 AI enemies simultaneously. Outlast them all.</div>
+                <div class="mode-badge" style="background:rgba(255,79,109,0.15);color:var(--red);border:1px solid rgba(255,79,109,0.3)">3v1</div>
+                <div class="mode-reward">🪙 150 per win</div>
+            </div>
+            <div class="mode-card mode-theme-king" onclick="app.selectMode('king_galaxy')">
+                <div class="mode-icon">👑</div>
+                <div class="mode-name">King of the Galaxy</div>
+                <div class="mode-desc">Capture and hold the central throne planet for 20 turns to win.</div>
+                <div class="mode-badge" style="background:rgba(251,191,36,0.15);color:var(--gold);border:1px solid rgba(251,191,36,0.3)">KING</div>
+                <div class="mode-reward">🪙 120 + 💎 5</div>
+            </div>
+            <div class="mode-card mode-theme-conquest" onclick="app.selectMode('conquest')">
+                <div class="mode-icon">🌍</div>
+                <div class="mode-name">Conquest</div>
+                <div class="mode-desc">Large map, 4 factions. Eliminate all rivals to claim the galaxy.</div>
+                <div class="mode-badge" style="background:rgba(123,97,255,0.15);color:var(--purple);border:1px solid rgba(123,97,255,0.3)">4-WAY</div>
+                <div class="mode-reward">🪙 250 + 💎 10</div>
+            </div>
+            <div class="mode-card mode-theme-mirror" onclick="app.selectMode('mirror')">
+                <div class="mode-icon">🪞</div>
+                <div class="mode-name">Mirror Match</div>
+                <div class="mode-desc">Perfectly symmetric start. Pure strategy, no luck.</div>
+                <div class="mode-badge" style="background:rgba(0,212,255,0.12);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)">FAIR</div>
+                <div class="mode-reward">🪙 80 per win</div>
+            </div>
+            <div class="mode-card mode-theme-defend" onclick="app.selectMode('defend_core')">
+                <div class="mode-icon">🏰</div>
+                <div class="mode-name">Defend the Core</div>
+                <div class="mode-desc">Your home planet is massive. Protect it against endless waves.</div>
+                <div class="mode-badge" style="background:rgba(52,211,153,0.12);color:var(--green);border:1px solid rgba(52,211,153,0.3)">TOWER</div>
+                <div class="mode-reward">🪙 100 per win</div>
+            </div>
         </div>
     </div>
+
 
     <!-- ═══════════════════════════════════════════════════ -->
     <!-- SCREEN 3: BATTLE SETUP (Agent Picker)              -->
@@ -215,6 +259,15 @@
                     <div class="stat-row"><span>Defense</span><div class="stat-bar"><div class="stat-fill def" style="width:30%"></div></div></div>
                     <div class="stat-row"><span>Economy</span><div class="stat-bar"><div class="stat-fill eco" style="width:40%"></div></div></div>
                 </div>
+            </div>
+        </div>
+        <!-- Difficulty Selector -->
+        <div class="difficulty-bar" id="difficultyBar">
+            <div class="loadout-label">🎯 DIFFICULTY</div>
+            <div class="diff-pill-wrap">
+                <button class="diff-pill" data-diff="easy" onclick="app.audio.playUi('click')">🌱 EASY<span class="diff-sub">AI weaker</span></button>
+                <button class="diff-pill active" data-diff="medium" onclick="app.audio.playUi('click')">⚔️ MEDIUM<span class="diff-sub">Balanced</span></button>
+                <button class="diff-pill" data-diff="hard" onclick="app.audio.playUi('click')">💀 HARD<span class="diff-sub">AI stronger</span></button>
             </div>
         </div>
         <div class="battle-format-bar">
@@ -517,6 +570,65 @@
 
         <!-- Floating damage numbers -->
         <div class="damage-container" id="damageContainer"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- SCREEN: SETTINGS                                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screenSettings" class="screen">
+        <div class="screen-header">
+            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
+            <h2 class="screen-title">⚙️ SETTINGS</h2>
+            <div class="header-spacer"></div>
+        </div>
+        <div class="settings-container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            
+            <div class="settings-section" style="background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: var(--cyan); border-bottom: 1px solid rgba(0,212,255,0.2); padding-bottom: 10px; margin-bottom: 16px;">🔊 AUDIO</h3>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 16px;">Music</div>
+                        <div style="font-size: 12px; color: var(--text3);">Continuous background soundtrack</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="musicToggle" onchange="app.toggleMusic(this.checked)" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 16px;">Sound Effects</div>
+                        <div style="font-size: 12px; color: var(--text3);">Combat sounds and UI clicks</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sfxToggle" onchange="app.toggleSfx(this.checked)" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section" style="background: var(--card); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px;">
+                <h3 style="margin-top: 0; color: var(--gold); border-bottom: 1px solid rgba(251,191,36,0.2); padding-bottom: 10px; margin-bottom: 16px;">💾 DATA & SAVE</h3>
+                
+                <p style="font-size: 13px; color: var(--text2); margin-bottom: 16px;">
+                    Your progress is saved automatically. Use these options to backup your save or play across different devices.
+                </p>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="res-btn primary" style="flex: 1;" onclick="exportSave(app.save)">
+                        📥 Backup Save
+                    </button>
+                    
+                    <button class="res-btn" style="flex: 1; position: relative; overflow: hidden;">
+                        📤 Import Save
+                        <input type="file" accept=".json" onchange="importSave(this.files[0], (s) => { app.save = s; app.updateUiFromSave(); app.showScreen('title'); app.showToast('Save Imported successfully!'); })" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════ -->
