@@ -1294,7 +1294,8 @@ class PlanetWarsApp {
     // ─── WebSocket ───────────────────────────────────
 
     _connectWS() {
-        const wsUrl = `ws://${window.location.hostname || 'localhost'}:${window.location.port || 8765}/ws`;
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
         try {
             this.ws = new WebSocket(wsUrl);
             this.ws.onopen = () => {
