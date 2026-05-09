@@ -1,0 +1,8 @@
+.git
+.venv
+__pycache__
+*.pyc
+replays/
+training/
+tests/
+.gemini/
