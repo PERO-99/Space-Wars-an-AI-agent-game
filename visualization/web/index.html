@@ -103,10 +103,18 @@
             <div class="header-spacer"></div>
         </div>
         <div class="mode-grid">
+            <!-- AI vs Me is FIRST — most important for new players -->
+            <div class="mode-card mode-theme-astronaut mode-featured" onclick="app.selectMode('ai_vs_me')">
+                <div class="mode-icon">👨‍🚀</div>
+                <div class="mode-name">AI vs Me <span style="font-size:11px;color:var(--gold)">⭐ START HERE</span></div>
+                <div class="mode-desc">You command one side manually versus an AI rival. Best for beginners!</div>
+                <div class="mode-badge free">FREE</div>
+                <div class="mode-reward">🪙 75 per win</div>
+            </div>
             <div class="mode-card mode-theme-quick" onclick="app.selectMode('quick')">
                 <div class="mode-icon">⚡</div>
                 <div class="mode-name">Quick Match</div>
-                <div class="mode-desc">Fast 1v1 AI battle. Pick agents & fight!</div>
+                <div class="mode-desc">Fast 1v1 AI battle. Pick agents &amp; fight!</div>
                 <div class="mode-badge free">FREE</div>
                 <div class="mode-reward">🪙 50 per win</div>
             </div>
@@ -116,6 +124,20 @@
                 <div class="mode-desc">10 missions of increasing difficulty</div>
                 <div class="mode-badge story">STORY</div>
                 <div class="mode-reward">🪙 100 + ⭐ Stars</div>
+            </div>
+            <div class="mode-card mode-theme-characters" onclick="app.selectMode('character_duel')">
+                <div class="mode-icon">🎭</div>
+                <div class="mode-name">Character Duel</div>
+                <div class="mode-desc">Pick iconic commanders and let them duel with style.</div>
+                <div class="mode-badge story">DUEL</div>
+                <div class="mode-reward">🪙 40 entry • 🪙 120 reward</div>
+            </div>
+            <div class="mode-card mode-theme-blitz" onclick="app.selectMode('blitz')">
+                <div class="mode-icon">💥</div>
+                <div class="mode-name">Blitz</div>
+                <div class="mode-desc">50-turn max! Frantic all-out war on a tiny map. Speed wins.</div>
+                <div class="mode-badge" style="background:rgba(255,107,53,0.15);color:#ff6b35;border:1px solid rgba(255,107,53,0.3)">FAST</div>
+                <div class="mode-reward">🪙 60 per win</div>
             </div>
             <div class="mode-card mode-theme-tournament" onclick="app.selectMode('tournament')">
                 <div class="mode-icon">🏆</div>
@@ -131,62 +153,12 @@
                 <div class="mode-badge lab">LAB</div>
                 <div class="mode-reward">No rewards</div>
             </div>
-            <div class="mode-card mode-theme-astronaut" onclick="app.selectMode('ai_vs_me')">
-                <div class="mode-icon">👨‍🚀</div>
-                <div class="mode-name">AI vs Me</div>
-                <div class="mode-desc">You command one side manually versus an AI rival.</div>
-                <div class="mode-badge free">FREE</div>
-                <div class="mode-reward">🪙 75 per win</div>
-            </div>
-            <div class="mode-card mode-theme-characters" onclick="app.selectMode('character_duel')">
-                <div class="mode-icon">🎭</div>
-                <div class="mode-name">Character vs Character</div>
-                <div class="mode-desc">Pick iconic commanders and let them duel with style.</div>
-                <div class="mode-badge story">CHEAP</div>
-                <div class="mode-reward">🪙 40 entry • 🪙 120 reward</div>
-            </div>
-            <!-- NEW MODES -->
-            <div class="mode-card mode-theme-blitz" onclick="app.selectMode('blitz')">
-                <div class="mode-icon">💥</div>
-                <div class="mode-name">Blitz</div>
-                <div class="mode-desc">50-turn max! Frantic all-out war on a tiny map. Speed wins.</div>
-                <div class="mode-badge" style="background:rgba(255,107,53,0.15);color:#ff6b35;border:1px solid rgba(255,107,53,0.3)">FAST</div>
-                <div class="mode-reward">🪙 60 per win</div>
-            </div>
-            <div class="mode-card mode-theme-survival" onclick="app.selectMode('survival')">
-                <div class="mode-icon">☠️</div>
-                <div class="mode-name">Survival</div>
-                <div class="mode-desc">You vs 3 AI enemies simultaneously. Outlast them all.</div>
-                <div class="mode-badge" style="background:rgba(255,79,109,0.15);color:var(--red);border:1px solid rgba(255,79,109,0.3)">3v1</div>
-                <div class="mode-reward">🪙 150 per win</div>
-            </div>
-            <div class="mode-card mode-theme-king" onclick="app.selectMode('king_galaxy')">
-                <div class="mode-icon">👑</div>
-                <div class="mode-name">King of the Galaxy</div>
-                <div class="mode-desc">Capture and hold the central throne planet for 20 turns to win.</div>
-                <div class="mode-badge" style="background:rgba(251,191,36,0.15);color:var(--gold);border:1px solid rgba(251,191,36,0.3)">KING</div>
-                <div class="mode-reward">🪙 120 + 💎 5</div>
-            </div>
-            <div class="mode-card mode-theme-conquest" onclick="app.selectMode('conquest')">
-                <div class="mode-icon">🌍</div>
-                <div class="mode-name">Conquest</div>
-                <div class="mode-desc">Large map, 4 factions. Eliminate all rivals to claim the galaxy.</div>
-                <div class="mode-badge" style="background:rgba(123,97,255,0.15);color:var(--purple);border:1px solid rgba(123,97,255,0.3)">4-WAY</div>
-                <div class="mode-reward">🪙 250 + 💎 10</div>
-            </div>
             <div class="mode-card mode-theme-mirror" onclick="app.selectMode('mirror')">
                 <div class="mode-icon">🪞</div>
                 <div class="mode-name">Mirror Match</div>
                 <div class="mode-desc">Perfectly symmetric start. Pure strategy, no luck.</div>
                 <div class="mode-badge" style="background:rgba(0,212,255,0.12);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)">FAIR</div>
                 <div class="mode-reward">🪙 80 per win</div>
-            </div>
-            <div class="mode-card mode-theme-defend" onclick="app.selectMode('defend_core')">
-                <div class="mode-icon">🏰</div>
-                <div class="mode-name">Defend the Core</div>
-                <div class="mode-desc">Your home planet is massive. Protect it against endless waves.</div>
-                <div class="mode-badge" style="background:rgba(52,211,153,0.12);color:var(--green);border:1px solid rgba(52,211,153,0.3)">TOWER</div>
-                <div class="mode-reward">🪙 100 per win</div>
             </div>
         </div>
     </div>
@@ -289,10 +261,16 @@
                 <div class="loadout-slot" id="slot_special"><span>💫</span><small>Special</small></div>
             </div>
         </div>
-        <button class="mega-btn launch-btn" onclick="app.launchBattle()">
-            <span class="mega-btn-icon">🚀</span>
-            <span class="mega-btn-text">LAUNCH BATTLE!</span>
-        </button>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="mega-btn launch-btn" onclick="app.launchBattle()" style="flex:1;min-width:200px;">
+                <span class="mega-btn-icon">🚀</span>
+                <span class="mega-btn-text">LAUNCH BATTLE!</span>
+            </button>
+            <button class="mega-btn" onclick="app.showHowToPlay()" style="flex:0;min-width:140px;background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,97,255,0.15));border:1px solid rgba(0,212,255,0.4);">
+                <span class="mega-btn-icon">📖</span>
+                <span class="mega-btn-text" style="font-size:14px;">HOW TO PLAY</span>
+            </button>
+        </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════ -->
@@ -365,51 +343,7 @@
     <!-- ═══════════════════════════════════════════════════ -->
     <!-- SCREEN 9: SETTINGS                                 -->
     <!-- ═══════════════════════════════════════════════════ -->
-    <div id="screenSettings" class="screen">
-        <div class="screen-header">
-            <button class="back-btn" onclick="app.showScreen('title')">◀ Back</button>
-            <h2 class="screen-title">⚙️ SETTINGS</h2>
-            <div class="header-spacer"></div>
-        </div>
-        <div class="settings-list">
-            <div class="setting-row">
-                <span>🎵 Sound Effects</span>
-                <label class="toggle"><input type="checkbox" checked id="settingSound"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>🎶 Music</span>
-                <label class="toggle"><input type="checkbox" checked id="settingMusic"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>📊 Show FPS</span>
-                <label class="toggle"><input type="checkbox" id="settingFPS"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>🌟 Particle Effects</span>
-                <label class="toggle"><input type="checkbox" checked id="settingParticles"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>📛 Show Labels</span>
-                <label class="toggle"><input type="checkbox" checked id="settingLabels"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>🌐 Territory Zones</span>
-                <label class="toggle"><input type="checkbox" checked id="settingTerritory"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>✈️ Fleet Trails</span>
-                <label class="toggle"><input type="checkbox" checked id="settingTrails"><span class="toggle-slider"></span></label>
-            </div>
-            <div class="setting-row">
-                <span>🔄 Reset Progress</span>
-                <button class="reset-btn" onclick="app.resetProgress()">RESET ALL</button>
-            </div>
-            <div class="setting-row">
-                <span>🏷️ Player Name</span>
-                <input type="text" class="name-input" id="settingName" placeholder="Commander" maxlength="15" onchange="app.saveName()">
-            </div>
-        </div>
-    </div>
+    <!-- (settings merged into second screenSettings below) -->
 
     <!-- ═══════════════════════════════════════════════════ -->
     <!-- SCREEN 10: CAMPAIGN MAP                            -->
@@ -665,6 +599,32 @@
                     <button class="res-btn" onclick="app.showScreen('modes')">🏠 Main Menu</button>
                     <button class="res-btn" onclick="app.showScreen('shop')">🛒 Shop</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- HOW TO PLAY MODAL                                  -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="how-to-play-overlay hidden" id="howToPlayOverlay">
+        <div class="htp-card">
+            <div class="htp-header">
+                <span class="htp-title" id="htpTitle">📖 How to Play</span>
+                <button class="htp-close" onclick="app.closeHowToPlay()">✕</button>
+            </div>
+            <div class="htp-progress">
+                <div class="htp-dot active" id="htpDot0"></div>
+                <div class="htp-dot" id="htpDot1"></div>
+                <div class="htp-dot" id="htpDot2"></div>
+                <div class="htp-dot" id="htpDot3"></div>
+                <div class="htp-dot" id="htpDot4"></div>
+            </div>
+            <div class="htp-content" id="htpContent">
+                <!-- Filled by JS -->
+            </div>
+            <div class="htp-footer">
+                <button class="htp-btn secondary" id="htpPrevBtn" onclick="app.htpPrev()" style="display:none">◀ Back</button>
+                <button class="htp-btn primary" id="htpNextBtn" onclick="app.htpNext()">Next ▶</button>
             </div>
         </div>
     </div>

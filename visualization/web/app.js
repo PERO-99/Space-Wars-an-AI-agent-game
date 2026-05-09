@@ -6,98 +6,98 @@
 // ─── GAME DATA ───────────────────────────────────────────
 
 const COMMANDERS = [
-    { id:'human', name:'You (Manual)', icon:'<div class="sprite sheet-avatars pos-tl icon-md" style="filter:saturate(0.9)"></div>', emoji:'👨‍🚀', desc:'Play yourself: click planets to launch fleets.', atk:60, def:60, eco:60, price:0 },
-    { id:'adaptive', name:'Adaptive AI', icon:'<div class="sprite sheet-avatars pos-tl icon-md" style="filter:hue-rotate(140deg) saturate(1.4)"></div>', emoji:'🧠', desc:'Learns from previous battles and switches tactics mid-fight.', atk:85, def:85, eco:85, price:0 },
-    { id:'aggressive', name:'Admiral Blaze', icon:'<div class="sprite sheet-avatars pos-tl icon-md"></div>', emoji:'⚔️', desc:'Relentless attacker. Strike first, think later.', atk:95, def:30, eco:40, price:0 },
-    { id:'greedy', name:'Captain Greed', icon:'<div class="sprite sheet-avatars pos-tr icon-md"></div>', emoji:'🎯', desc:'Expands economy, then crushes.', atk:70, def:40, eco:90, price:0 },
-    { id:'defensive', name:'General Shield', icon:'<div class="sprite sheet-avatars pos-bl icon-md"></div>', emoji:'🛡️', desc:'Impenetrable defenses. Outlast the enemy.', atk:35, def:95, eco:65, price:0 },
-    { id:'random', name:'Agent Chaos', icon:'<div class="sprite sheet-avatars pos-br icon-md"></div>', emoji:'🎲', desc:'Unpredictable. Even he doesn\'t know his plan.', atk:50, def:50, eco:50, price:0 },
-    { id:'ppo', name:'Neural Lord', icon:'<div class="sprite sheet-avatars pos-tl icon-md" style="filter:hue-rotate(90deg)"></div>', emoji:'🧠', desc:'AI-trained neural network commander.', atk:80, def:75, eco:80, price:0 },
-    { id:'swarm', name:'Hive Queen', icon:'<div class="sprite sheet-avatars pos-tr icon-md" style="filter:hue-rotate(180deg)"></div>', emoji:'👾', desc:'Overwhelm with sheer numbers.', atk:85, def:20, eco:95, price:0 },
-    { id:'sniper', name:'Shadow Blade', icon:'<div class="sprite sheet-avatars pos-bl icon-md" style="filter:hue-rotate(270deg)"></div>', emoji:'🗡️', desc:'Precise strikes on weak targets.', atk:90, def:45, eco:55, price:0 },
-    { id:'titan', name:'Iron Titan', icon:'<div class="sprite sheet-avatars pos-br icon-md" style="filter:hue-rotate(45deg)"></div>', emoji:'🤖', desc:'Slow but unstoppable force.', atk:60, def:90, eco:70, price:0 },
+    { id: 'human', name: 'You (Manual)', icon: '<div class="sprite sheet-avatars pos-tl icon-md" style="filter:saturate(0.9)"></div>', emoji: '👨‍🚀', desc: 'Play yourself: click planets to launch fleets.', atk: 60, def: 60, eco: 60, price: 0 },
+    { id: 'adaptive', name: 'Adaptive AI', icon: '<div class="sprite sheet-avatars pos-tl icon-md" style="filter:hue-rotate(140deg) saturate(1.4)"></div>', emoji: '🧠', desc: 'Learns from previous battles and switches tactics mid-fight.', atk: 85, def: 85, eco: 85, price: 0 },
+    { id: 'aggressive', name: 'Admiral Blaze', icon: '<div class="sprite sheet-avatars pos-tl icon-md"></div>', emoji: '⚔️', desc: 'Relentless attacker. Strike first, think later.', atk: 95, def: 30, eco: 40, price: 0 },
+    { id: 'greedy', name: 'Captain Greed', icon: '<div class="sprite sheet-avatars pos-tr icon-md"></div>', emoji: '🎯', desc: 'Expands economy, then crushes.', atk: 70, def: 40, eco: 90, price: 0 },
+    { id: 'defensive', name: 'General Shield', icon: '<div class="sprite sheet-avatars pos-bl icon-md"></div>', emoji: '🛡️', desc: 'Impenetrable defenses. Outlast the enemy.', atk: 35, def: 95, eco: 65, price: 0 },
+    { id: 'random', name: 'Agent Chaos', icon: '<div class="sprite sheet-avatars pos-br icon-md"></div>', emoji: '🎲', desc: 'Unpredictable. Even he doesn\'t know his plan.', atk: 50, def: 50, eco: 50, price: 0 },
+    { id: 'ppo', name: 'Neural Lord', icon: '<div class="sprite sheet-avatars pos-tl icon-md" style="filter:hue-rotate(90deg)"></div>', emoji: '🧠', desc: 'AI-trained neural network commander.', atk: 80, def: 75, eco: 80, price: 0 },
+    { id: 'swarm', name: 'Hive Queen', icon: '<div class="sprite sheet-avatars pos-tr icon-md" style="filter:hue-rotate(180deg)"></div>', emoji: '👾', desc: 'Overwhelm with sheer numbers.', atk: 85, def: 20, eco: 95, price: 0 },
+    { id: 'sniper', name: 'Shadow Blade', icon: '<div class="sprite sheet-avatars pos-bl icon-md" style="filter:hue-rotate(270deg)"></div>', emoji: '🗡️', desc: 'Precise strikes on weak targets.', atk: 90, def: 45, eco: 55, price: 0 },
+    { id: 'titan', name: 'Iron Titan', icon: '<div class="sprite sheet-avatars pos-br icon-md" style="filter:hue-rotate(45deg)"></div>', emoji: '🤖', desc: 'Slow but unstoppable force.', atk: 60, def: 90, eco: 70, price: 0 },
 ];
 
 const WEAPONS = [
-    { id:'laser', name:'Plasma Laser', icon:'<div class="sprite sheet-icons pos-bl icon-md"></div>', desc:'+10% attack damage', type:'weapon', price:200, effect:'atk+10' },
-    { id:'missiles', name:'Homing Missiles', icon:'<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(90deg)"></div>', desc:'+15% fleet speed', type:'weapon', price:350, effect:'speed+15' },
-    { id:'railgun', name:'Railgun', icon:'<div class="sprite sheet-icons pos-br icon-md"></div>', desc:'+20% attack power', type:'weapon', price:500, effect:'atk+20' },
-    { id:'nova', name:'Nova Cannon', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(180deg)"></div>', desc:'Devastating area damage', type:'weapon', price:800, effect:'splash+25' },
-    { id:'void', name:'Void Ray', icon:'<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(270deg)"></div>', desc:'Pierces shields', type:'weapon', price:1200, effect:'pierce' },
+    { id: 'laser', name: 'Plasma Laser', icon: '<div class="sprite sheet-icons pos-bl icon-md"></div>', desc: '+10% attack damage', type: 'weapon', price: 200, effect: 'atk+10' },
+    { id: 'missiles', name: 'Homing Missiles', icon: '<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(90deg)"></div>', desc: '+15% fleet speed', type: 'weapon', price: 350, effect: 'speed+15' },
+    { id: 'railgun', name: 'Railgun', icon: '<div class="sprite sheet-icons pos-br icon-md"></div>', desc: '+20% attack power', type: 'weapon', price: 500, effect: 'atk+20' },
+    { id: 'nova', name: 'Nova Cannon', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(180deg)"></div>', desc: 'Devastating area damage', type: 'weapon', price: 800, effect: 'splash+25' },
+    { id: 'void', name: 'Void Ray', icon: '<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(270deg)"></div>', desc: 'Pierces shields', type: 'weapon', price: 1200, effect: 'pierce' },
 ];
 
 const SHIELDS = [
-    { id:'basic_shield', name:'Energy Shield', icon:'<div class="sprite sheet-icons pos-br icon-md"></div>', desc:'+10% planet defense', type:'shield', price:150, effect:'def+10' },
-    { id:'heavy_shield', name:'Heavy Armor', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(45deg)"></div>', desc:'+25% planet HP', type:'shield', price:400, effect:'hp+25' },
-    { id:'regen', name:'Regen Field', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(90deg)"></div>', desc:'Planets heal over time', type:'shield', price:600, effect:'regen' },
-    { id:'barrier', name:'Phase Barrier', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(200deg)"></div>', desc:'Block first attack', type:'shield', price:900, effect:'block1' },
+    { id: 'basic_shield', name: 'Energy Shield', icon: '<div class="sprite sheet-icons pos-br icon-md"></div>', desc: '+10% planet defense', type: 'shield', price: 150, effect: 'def+10' },
+    { id: 'heavy_shield', name: 'Heavy Armor', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(45deg)"></div>', desc: '+25% planet HP', type: 'shield', price: 400, effect: 'hp+25' },
+    { id: 'regen', name: 'Regen Field', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(90deg)"></div>', desc: 'Planets heal over time', type: 'shield', price: 600, effect: 'regen' },
+    { id: 'barrier', name: 'Phase Barrier', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(200deg)"></div>', desc: 'Block first attack', type: 'shield', price: 900, effect: 'block1' },
 ];
 
 const BOOSTS = [
-    { id:'growth_boost', name:'Growth Serum', icon:'<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(120deg)"></div>', desc:'+20% growth rate', type:'boost', price:300, effect:'growth+20' },
-    { id:'speed_boost', name:'Warp Drive', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(-50deg)"></div>', desc:'Fleets move 30% faster', type:'boost', price:400, effect:'speed+30' },
-    { id:'scout', name:'Scout Drone', icon:'<div class="sprite sheet-icons pos-tl icon-md" style="filter:saturate(0)"></div>', desc:'See enemy fleet counts', type:'boost', price:250, effect:'vision' },
-    { id:'economy', name:'Trade Route', icon:'<div class="sprite sheet-icons pos-tl icon-md"></div>', desc:'+25% coin rewards', type:'boost', price:350, effect:'coins+25' },
+    { id: 'growth_boost', name: 'Growth Serum', icon: '<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(120deg)"></div>', desc: '+20% growth rate', type: 'boost', price: 300, effect: 'growth+20' },
+    { id: 'speed_boost', name: 'Warp Drive', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(-50deg)"></div>', desc: 'Fleets move 30% faster', type: 'boost', price: 400, effect: 'speed+30' },
+    { id: 'scout', name: 'Scout Drone', icon: '<div class="sprite sheet-icons pos-tl icon-md" style="filter:saturate(0)"></div>', desc: 'See enemy fleet counts', type: 'boost', price: 250, effect: 'vision' },
+    { id: 'economy', name: 'Trade Route', icon: '<div class="sprite sheet-icons pos-tl icon-md"></div>', desc: '+25% coin rewards', type: 'boost', price: 350, effect: 'coins+25' },
 ];
 
 const SPECIALS = [
-    { id:'nuke_item', name:'Orbital Nuke', icon:'<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(180deg)"></div>', desc:'Destroy 50% ships on a planet', type:'special', price:600, effect:'nuke', consumable:true },
-    { id:'freeze', name:'Cryo Bomb', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(190deg)"></div>', desc:'Freeze enemy fleets for 3 turns', type:'special', price:500, effect:'freeze', consumable:true },
-    { id:'reinforce', name:'Reinforcements', icon:'<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(50deg)"></div>', desc:'Spawn 50 ships on your planet', type:'special', price:400, effect:'reinforce', consumable:true },
-    { id:'emp', name:'EMP Blast', icon:'<div class="sprite sheet-icons pos-br icon-md" style="filter:invert(1)"></div>', desc:'Disable enemy defenses 5 turns', type:'special', price:700, effect:'emp', consumable:true },
-    { id:'combo', name:'Tekken Combo', icon:'<div class="sprite sheet-icons pos-tl icon-md" style="filter:hue-rotate(320deg) saturate(1.4)"></div>', desc:'Heavy combo strike on a target world', type:'special', price:850, effect:'combo', consumable:true },
+    { id: 'nuke_item', name: 'Orbital Nuke', icon: '<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(180deg)"></div>', desc: 'Destroy 50% ships on a planet', type: 'special', price: 600, effect: 'nuke', consumable: true },
+    { id: 'freeze', name: 'Cryo Bomb', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:hue-rotate(190deg)"></div>', desc: 'Freeze enemy fleets for 3 turns', type: 'special', price: 500, effect: 'freeze', consumable: true },
+    { id: 'reinforce', name: 'Reinforcements', icon: '<div class="sprite sheet-icons pos-bl icon-md" style="filter:hue-rotate(50deg)"></div>', desc: 'Spawn 50 ships on your planet', type: 'special', price: 400, effect: 'reinforce', consumable: true },
+    { id: 'emp', name: 'EMP Blast', icon: '<div class="sprite sheet-icons pos-br icon-md" style="filter:invert(1)"></div>', desc: 'Disable enemy defenses 5 turns', type: 'special', price: 700, effect: 'emp', consumable: true },
+    { id: 'combo', name: 'Tekken Combo', icon: '<div class="sprite sheet-icons pos-tl icon-md" style="filter:hue-rotate(320deg) saturate(1.4)"></div>', desc: 'Heavy combo strike on a target world', type: 'special', price: 850, effect: 'combo', consumable: true },
 ];
 
 const SHOP_ITEMS = [
-    { id:'coin_pack1', name:'Coin Pouch', icon:'<div class="sprite sheet-icons pos-tl icon-lg"></div>', desc:'500 coins', price:0, currency:'free', reward:{ coins:500 }},
-    { id:'coin_pack2', name:'Coin Chest', icon:'<div class="sprite sheet-icons pos-tl icon-lg" style="transform:scale(1.2)"></div>', desc:'2000 coins', price:0, currency:'free', reward:{ coins:2000 }},
-    { id:'gem_pack1', name:'Gem Shard', icon:'<div class="sprite sheet-icons pos-tr icon-lg"></div>', desc:'25 gems', price:0, currency:'free', reward:{ gems:25 }},
-    { id:'starter_kit', name:'Starter Bundle', icon:'<div class="sprite sheet-icons pos-bl icon-lg"></div>', desc:'1000🪙 + 50💎', price:0, currency:'free', reward:{ coins:1000, gems:50 }, oneTime:true },
-    { id:'mega_chest', name:'Mega Chest', icon:'<div class="sprite sheet-icons pos-br icon-lg"></div>', desc:'Random weapon + 500🪙', price:0, currency:'free', reward:{ coins:500, randomWeapon:true }},
-    { id:'xp_boost', name:'XP Doubler', icon:'<div class="sprite sheet-icons pos-tr icon-lg" style="filter:hue-rotate(50deg) saturate(2)"></div>', desc:'2x XP for next battle', price:0, currency:'free', reward:{ xpBoost:true }},
+    { id: 'coin_pack1', name: 'Coin Pouch', icon: '<div class="sprite sheet-icons pos-tl icon-lg"></div>', desc: '500 coins', price: 0, currency: 'free', reward: { coins: 500 } },
+    { id: 'coin_pack2', name: 'Coin Chest', icon: '<div class="sprite sheet-icons pos-tl icon-lg" style="transform:scale(1.2)"></div>', desc: '2000 coins', price: 0, currency: 'free', reward: { coins: 2000 } },
+    { id: 'gem_pack1', name: 'Gem Shard', icon: '<div class="sprite sheet-icons pos-tr icon-lg"></div>', desc: '25 gems', price: 0, currency: 'free', reward: { gems: 25 } },
+    { id: 'starter_kit', name: 'Starter Bundle', icon: '<div class="sprite sheet-icons pos-bl icon-lg"></div>', desc: '1000🪙 + 50💎', price: 0, currency: 'free', reward: { coins: 1000, gems: 50 }, oneTime: true },
+    { id: 'mega_chest', name: 'Mega Chest', icon: '<div class="sprite sheet-icons pos-br icon-lg"></div>', desc: 'Random weapon + 500🪙', price: 0, currency: 'free', reward: { coins: 500, randomWeapon: true } },
+    { id: 'xp_boost', name: 'XP Doubler', icon: '<div class="sprite sheet-icons pos-tr icon-lg" style="filter:hue-rotate(50deg) saturate(2)"></div>', desc: '2x XP for next battle', price: 0, currency: 'free', reward: { xpBoost: true } },
 ];
 
 const THEMES = [
-    { id:'default', name:'Deep Space', icon:'🌌', desc:'Classic dark nebula', price:0, bg:'#070b18' },
-    { id:'crimson', name:'Crimson Void', icon:'🔴', desc:'Blood red cosmos', price:0, bg:'#1a0505' },
-    { id:'emerald', name:'Emerald Nebula', icon:'🟢', desc:'Toxic green haze', price:0, bg:'#051a0a' },
-    { id:'gold', name:'Solar Flare', icon:'🟡', desc:'Golden sun empire', price:0, bg:'#1a1505' },
-    { id:'neon', name:'Neon Grid', icon:'🟣', desc:'Cyberpunk vibes', price:0, bg:'#0a051a' },
-    { id:'arctic', name:'Arctic Storm', icon:'🔵', desc:'Frozen blue void', price:0, bg:'#050f1a' },
+    { id: 'default', name: 'Deep Space', icon: '🌌', desc: 'Classic dark nebula', price: 0, bg: '#070b18' },
+    { id: 'crimson', name: 'Crimson Void', icon: '🔴', desc: 'Blood red cosmos', price: 0, bg: '#1a0505' },
+    { id: 'emerald', name: 'Emerald Nebula', icon: '🟢', desc: 'Toxic green haze', price: 0, bg: '#051a0a' },
+    { id: 'gold', name: 'Solar Flare', icon: '🟡', desc: 'Golden sun empire', price: 0, bg: '#1a1505' },
+    { id: 'neon', name: 'Neon Grid', icon: '🟣', desc: 'Cyberpunk vibes', price: 0, bg: '#0a051a' },
+    { id: 'arctic', name: 'Arctic Storm', icon: '🔵', desc: 'Frozen blue void', price: 0, bg: '#050f1a' },
 ];
 
 const CAMPAIGN_LEVELS = [
-    { id:1, name:'First Contact', emoji:'🌍', agent:'random', difficulty:'Easy', reward:100 },
-    { id:2, name:'Border Clash', emoji:'💥', agent:'random', difficulty:'Easy', reward:100 },
-    { id:3, name:'Resource War', emoji:'💎', agent:'greedy', difficulty:'Medium', reward:150 },
-    { id:4, name:'Defensive Line', emoji:'🛡️', agent:'defensive', difficulty:'Medium', reward:150 },
-    { id:5, name:'Blitz Attack', emoji:'⚡', agent:'aggressive', difficulty:'Hard', reward:200 },
-    { id:6, name:'Mind Games', emoji:'🧠', agent:'ppo', difficulty:'Hard', reward:200 },
-    { id:7, name:'Swarm Tactics', emoji:'🐝', agent:'aggressive', difficulty:'Very Hard', reward:300 },
-    { id:8, name:'Iron Fortress', emoji:'🏰', agent:'defensive', difficulty:'Very Hard', reward:300 },
-    { id:9, name:'Neural Storm', emoji:'⚡', agent:'ppo', difficulty:'Extreme', reward:500 },
-    { id:10, name:'Final Stand', emoji:'👑', agent:'ppo', difficulty:'Impossible', reward:1000 },
+    { id: 1, name: 'First Contact', emoji: '🌍', agent: 'random', difficulty: 'Easy', reward: 100 },
+    { id: 2, name: 'Border Clash', emoji: '💥', agent: 'random', difficulty: 'Easy', reward: 100 },
+    { id: 3, name: 'Resource War', emoji: '💎', agent: 'greedy', difficulty: 'Medium', reward: 150 },
+    { id: 4, name: 'Defensive Line', emoji: '🛡️', agent: 'defensive', difficulty: 'Medium', reward: 150 },
+    { id: 5, name: 'Blitz Attack', emoji: '⚡', agent: 'aggressive', difficulty: 'Hard', reward: 200 },
+    { id: 6, name: 'Mind Games', emoji: '🧠', agent: 'ppo', difficulty: 'Hard', reward: 200 },
+    { id: 7, name: 'Swarm Tactics', emoji: '🐝', agent: 'aggressive', difficulty: 'Very Hard', reward: 300 },
+    { id: 8, name: 'Iron Fortress', emoji: '🏰', agent: 'defensive', difficulty: 'Very Hard', reward: 300 },
+    { id: 9, name: 'Neural Storm', emoji: '⚡', agent: 'ppo', difficulty: 'Extreme', reward: 500 },
+    { id: 10, name: 'Final Stand', emoji: '👑', agent: 'ppo', difficulty: 'Impossible', reward: 1000 },
 ];
 
 const MODE_CONFIG = {
-    quick:          { format: 'classic',         costCoins: 0 },
-    campaign:       { format: 'classic',         costCoins: 0 },
-    tournament:     { format: 'classic',         costCoins: 0 },
-    sandbox:        { format: 'classic',         costCoins: 0 },
-    ai_vs_me:       { format: 'ai_vs_me',        costCoins: 0 },
-    character_duel: { format: 'character_duel',  costCoins: 40 },
-    blitz:          { format: 'blitz',           costCoins: 0, maxTurns: 50 },
-    survival:       { format: 'survival',        costCoins: 0 },
-    king_galaxy:    { format: 'king_galaxy',     costCoins: 0 },
-    conquest:       { format: 'conquest',        costCoins: 0 },
-    mirror:         { format: 'mirror',          costCoins: 0 },
-    defend_core:    { format: 'defend_core',     costCoins: 0 },
+    quick: { format: 'classic', costCoins: 0 },
+    campaign: { format: 'classic', costCoins: 0 },
+    tournament: { format: 'classic', costCoins: 0 },
+    sandbox: { format: 'classic', costCoins: 0 },
+    ai_vs_me: { format: 'ai_vs_me', costCoins: 0 },
+    character_duel: { format: 'classic', costCoins: 40 },
+    blitz: { format: 'classic', costCoins: 0, maxTurns: 50 },
+    survival: { format: 'classic', costCoins: 0 },
+    king_galaxy: { format: 'classic', costCoins: 0 },
+    conquest: { format: 'classic', costCoins: 0 },
+    mirror: { format: 'classic', costCoins: 0 },
+    defend_core: { format: 'classic', costCoins: 0 },
 };
 
 const DIFFICULTY_CONFIG = {
-    easy:   { label: 'EASY',   emoji: '🌱', desc: 'AI sends fewer ships', color: 'var(--green)',  handicap: 'easy'  },
-    medium: { label: 'MEDIUM', emoji: '⚔️', desc: 'Balanced challenge',   color: 'var(--gold)',   handicap: 'medium'},
-    hard:   { label: 'HARD',   emoji: '💀', desc: 'AI starts stronger',   color: 'var(--red)',    handicap: 'hard'  },
+    easy: { label: 'EASY', emoji: '🌱', desc: 'AI sends fewer ships', color: 'var(--green)', handicap: 'easy' },
+    medium: { label: 'MEDIUM', emoji: '⚔️', desc: 'Balanced challenge', color: 'var(--gold)', handicap: 'medium' },
+    hard: { label: 'HARD', emoji: '💀', desc: 'AI starts stronger', color: 'var(--red)', handicap: 'hard' },
 };
 
 // ─── SAVE STATE ──────────────────────────────────────────
@@ -138,14 +138,14 @@ function loadSave() {
         if (saved) {
             const merged = { ...DEFAULT_SAVE, ...JSON.parse(saved) };
             merged.ownedCommanders = Array.from(new Set([...(merged.ownedCommanders || []), ...COMMANDERS.map(c => c.id)]));
-            merged.ownedWeapons  = merged.ownedWeapons  || [];
-            merged.ownedShields  = merged.ownedShields  || [];
-            merged.ownedBoosts   = merged.ownedBoosts   || [];
+            merged.ownedWeapons = merged.ownedWeapons || [];
+            merged.ownedShields = merged.ownedShields || [];
+            merged.ownedBoosts = merged.ownedBoosts || [];
             merged.ownedSpecials = merged.ownedSpecials || {};
-            merged.ownedThemes   = merged.ownedThemes   || ['default'];
+            merged.ownedThemes = merged.ownedThemes || ['default'];
             return merged;
         }
-    } catch(e) {}
+    } catch (e) { }
     return { ...DEFAULT_SAVE };
 }
 
@@ -154,19 +154,19 @@ function persistSave(save) {
         save._version = 2;
         save._savedAt = Date.now();
         localStorage.setItem('planetwars_save', JSON.stringify(save));
-    } catch(e) {}
+    } catch (e) { }
 }
 
 // Export save as downloadable JSON file
 function exportSave(save) {
     try {
         const blob = new Blob([JSON.stringify(save, null, 2)], { type: 'application/json' });
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
         a.download = 'planetwars_save.json';
         a.click();
         URL.revokeObjectURL(a.href);
-    } catch(e) { alert('Export failed: ' + e.message); }
+    } catch (e) { alert('Export failed: ' + e.message); }
 }
 
 // Import save from file input
@@ -179,7 +179,7 @@ function importSave(file, onDone) {
             const merged = { ...DEFAULT_SAVE, ...parsed };
             localStorage.setItem('planetwars_save', JSON.stringify(merged));
             if (onDone) onDone(merged);
-        } catch(err) { alert('Import failed: ' + err.message); }
+        } catch (err) { alert('Import failed: ' + err.message); }
     };
     reader.readAsText(file);
 }
@@ -208,23 +208,23 @@ function addXP(save, amount) {
 
 class AudioManager {
     constructor(sfxEnabled = true, musicEnabled = true) {
-        this.sfxEnabled  = !!sfxEnabled;
+        this.sfxEnabled = !!sfxEnabled;
         this.musicEnabled = !!musicEnabled;
-        this.ctx    = null;
+        this.ctx = null;
         this.master = null;
-        this.sfxGain   = null;
+        this.sfxGain = null;
         this.musicGain = null;           // live gain node for current track
-        this._trackA   = null;           // setInterval handle — menu
-        this._trackB   = null;           // setInterval handle — battle
+        this._trackA = null;           // setInterval handle — menu
+        this._trackB = null;           // setInterval handle — battle
         this._currentTrack = null;       // 'menu' | 'battle'
-        this.unlocked  = false;
+        this.unlocked = false;
         this._unlocking = false;
         this._fadeTimer = null;
 
         // Resume music when page becomes visible again (mobile tab-switch)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && this.ctx && this.ctx.state === 'suspended') {
-                this.ctx.resume().catch(() => {});
+                this.ctx.resume().catch(() => { });
             }
         });
     }
@@ -244,7 +244,7 @@ class AudioManager {
             this.musicGain = this.ctx.createGain();
             this.musicGain.gain.value = this.musicEnabled ? 0.28 : 0;
             this.musicGain.connect(this.master);
-        } catch(e) { console.warn('[Audio]', e); }
+        } catch (e) { console.warn('[Audio]', e); }
     }
 
     // Call from any user-gesture (click, touch, keydown)
@@ -255,14 +255,28 @@ class AudioManager {
             if (!this.unlocked) {
                 this.unlocked = true;
                 if (autoMusic && this.musicEnabled && !this._currentTrack) this.startMenuMusic();
+            } else if (this._pendingMusicStart) {
+                // Retry pending music that was blocked by autoplay policy
+                const track = this._pendingMusicStart;
+                this._pendingMusicStart = null;
+                if (track === 'battle') this.startBattleMusic();
+                else this.startMenuMusic();
             }
             return;
         }
         this._unlocking = true;
         this.ctx.resume().then(() => {
             this._unlocking = false;
-            this.unlocked   = true;
-            if (autoMusic && this.musicEnabled && !this._currentTrack) this.startMenuMusic();
+            this.unlocked = true;
+            if (autoMusic && this.musicEnabled) {
+                if (this._pendingMusicStart === 'battle') {
+                    this._pendingMusicStart = null;
+                    this.startBattleMusic();
+                } else if (!this._currentTrack || this._pendingMusicStart === 'menu') {
+                    this._pendingMusicStart = null;
+                    this.startMenuMusic();
+                }
+            }
         }).catch(() => { this._unlocking = false; });
     }
 
@@ -309,7 +323,7 @@ class AudioManager {
         const t0 = this.ctx.currentTime + Math.max(0, when);
         try {
             const osc = this.ctx.createOscillator();
-            const g   = this.ctx.createGain();
+            const g = this.ctx.createGain();
             osc.type = type;
             osc.frequency.value = Math.max(20, freq);
             g.gain.setValueAtTime(0.0001, t0);
@@ -317,7 +331,7 @@ class AudioManager {
             g.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(0.03, dur));
             osc.connect(g); g.connect(dest);
             osc.start(t0); osc.stop(t0 + dur + 0.06);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // ── noise burst ──────────────────────────────────────
@@ -326,18 +340,18 @@ class AudioManager {
         if (!this.ctx || this.ctx.state !== 'running') return;
         try {
             const bufLen = Math.ceil(this.ctx.sampleRate * dur);
-            const buf  = this.ctx.createBuffer(1, bufLen, this.ctx.sampleRate);
+            const buf = this.ctx.createBuffer(1, bufLen, this.ctx.sampleRate);
             const data = buf.getChannelData(0);
             for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
             const src = this.ctx.createBufferSource();
             src.buffer = buf;
-            const g  = this.ctx.createGain();
+            const g = this.ctx.createGain();
             const t0 = this.ctx.currentTime + when;
             g.gain.setValueAtTime(gain, t0);
             g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
             src.connect(g); g.connect(this.sfxGain);
             src.start(t0); src.stop(t0 + dur);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     // ── PUBLIC SFX ───────────────────────────────────────
@@ -362,30 +376,30 @@ class AudioManager {
             case 'fleet_land':
                 this._noise(0.08, 0.45);
                 this._tone(120, 0.15, 'sawtooth', 0.35);
-                this._tone(60,  0.20, 'sine',     0.40, 0.05);
+                this._tone(60, 0.20, 'sine', 0.40, 0.05);
                 break;
             case 'hit':
                 this._noise(0.06, 0.50);
                 this._tone(150, 0.08, 'sawtooth', 0.40);
-                this._tone(80,  0.14, 'sine',     0.35, 0.04);
+                this._tone(80, 0.14, 'sine', 0.35, 0.04);
                 break;
             case 'special':
-                this._tone(900, 0.04, 'square',   0.55);
+                this._tone(900, 0.04, 'square', 0.55);
                 this._tone(1200, 0.08, 'triangle', 0.45, 0.05);
                 this._tone(600, 0.14, 'sawtooth', 0.35, 0.12);
-                this._tone(400, 0.18, 'sine',     0.30, 0.24);
+                this._tone(400, 0.18, 'sine', 0.30, 0.24);
                 break;
             case 'nuke':
                 this._noise(0.25, 0.65);
-                this._tone(60,  0.40, 'sine',     0.55);
-                this._tone(45,  0.50, 'sine',     0.45, 0.05);
+                this._tone(60, 0.40, 'sine', 0.55);
+                this._tone(45, 0.50, 'sine', 0.45, 0.05);
                 this._tone(1800, 0.08, 'triangle', 0.25, 0.12);
                 break;
             case 'freeze':
                 this._tone(1800, 0.06, 'triangle', 0.40);
                 this._tone(2200, 0.08, 'triangle', 0.35, 0.06);
                 this._tone(1400, 0.12, 'triangle', 0.28, 0.12);
-                this._tone(900,  0.18, 'sine',     0.20, 0.20);
+                this._tone(900, 0.18, 'sine', 0.20, 0.20);
                 break;
             case 'emp':
                 this._tone(220, 0.05, 'square', 0.60);
@@ -404,12 +418,12 @@ class AudioManager {
                 this._tone(960, 0.06, 'triangle', 0.30, 0.05);
                 break;
             case 'win':
-                [523,659,784,987,1047].forEach((f,i) =>
+                [523, 659, 784, 987, 1047].forEach((f, i) =>
                     this._tone(f, 0.22, 'triangle', 0.42, i * 0.11));
                 this._noise(0.10, 0.20, 0.20);
                 break;
             case 'lose':
-                [440,370,311,233,185].forEach((f,i) =>
+                [440, 370, 311, 233, 185].forEach((f, i) =>
                     this._tone(f, 0.28, 'sawtooth', 0.38, i * 0.13));
                 this._noise(0.15, 0.25, 0.10);
                 break;
@@ -417,7 +431,7 @@ class AudioManager {
     }
 
     // ── MUSIC ENGINE ─────────────────────────────────────
-    
+
     _initHTMLAudio() {
         if (this._htmlAudioInitialized) return;
         this._htmlAudioInitialized = true;
@@ -431,16 +445,27 @@ class AudioManager {
         if (!this.musicEnabled) return;
         this._initHTMLAudio();
         this._currentTrack = 'menu';
-        if (this.bgmBattle) this.bgmBattle.pause();
-        this.bgmMenu.play().catch(() => {});
+        if (this.bgmBattle) { this.bgmBattle.pause(); this.bgmBattle.currentTime = 0; }
+        const playPromise = this.bgmMenu.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Autoplay blocked — will retry on next user interaction
+                this._pendingMusicStart = 'menu';
+            });
+        }
     }
 
     startBattleMusic() {
         if (!this.musicEnabled) return;
         this._initHTMLAudio();
         this._currentTrack = 'battle';
-        if (this.bgmMenu) this.bgmMenu.pause();
-        this.bgmBattle.play().catch(() => {});
+        if (this.bgmMenu) { this.bgmMenu.pause(); this.bgmMenu.currentTime = 0; }
+        const playPromise = this.bgmBattle.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                this._pendingMusicStart = 'battle';
+            });
+        }
     }
 
     stopMusic() {
@@ -454,6 +479,10 @@ class AudioManager {
         if (!v) {
             this.stopMusic();
         } else {
+            // On mobile the AudioContext may need to be unlocked first
+            if (this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume().catch(() => {});
+            }
             if (this._currentTrack === 'battle') this.startBattleMusic();
             else this.startMenuMusic();
         }
@@ -513,7 +542,7 @@ class BgRenderer {
                 vy: (Math.random() - 0.5) * 0.5,
                 rot: Math.random() * Math.PI,
                 vrot: (Math.random() - 0.5) * 0.05,
-                points: Array.from({length: 8}, () => Math.random() * 0.4 + 0.8)
+                points: Array.from({ length: 8 }, () => Math.random() * 0.4 + 0.8)
             });
         }
     }
@@ -528,7 +557,7 @@ class BgRenderer {
         const ctx = this.ctx;
         ctx.fillStyle = 'rgba(4, 7, 20, 0.4)';
         ctx.fillRect(0, 0, this.w, this.h);
-        
+
         ctx.fillStyle = 'rgba(200,210,255,0.6)';
         ctx.beginPath();
         for (const s of this.stars) {
@@ -546,30 +575,30 @@ class BgRenderer {
             p.x = (p.x + p.speedX / this.w) % 1.0;
             if (p.x < 0) p.x += 1;
             p.rotation += 0.001;
-            
+
             const px = p.x * this.w;
             const py = p.y * this.h;
-            
+
             ctx.save();
             ctx.translate(px, py);
             ctx.rotate(p.rotation);
-            
-            const grad = ctx.createRadialGradient(-p.size*0.3, -p.size*0.3, p.size*0.1, 0, 0, p.size);
+
+            const grad = ctx.createRadialGradient(-p.size * 0.3, -p.size * 0.3, p.size * 0.1, 0, 0, p.size);
             grad.addColorStop(0, `hsl(${p.hue}, 80%, 60%)`);
             grad.addColorStop(0.6, `hsl(${p.hue}, 90%, 30%)`);
             grad.addColorStop(1, '#000');
-            
+
             ctx.beginPath();
             ctx.arc(0, 0, p.size, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
-            
+
             // Atmosphere
-            const atmoGrad = ctx.createRadialGradient(0,0, p.size*0.9, 0,0, p.size*1.3);
+            const atmoGrad = ctx.createRadialGradient(0, 0, p.size * 0.9, 0, 0, p.size * 1.3);
             atmoGrad.addColorStop(0, `hsla(${p.hue}, 100%, 50%, 0.3)`);
             atmoGrad.addColorStop(1, 'transparent');
             ctx.beginPath();
-            ctx.arc(0, 0, p.size*1.3, 0, Math.PI * 2);
+            ctx.arc(0, 0, p.size * 1.3, 0, Math.PI * 2);
             ctx.fillStyle = atmoGrad;
             ctx.fill();
             ctx.restore();
@@ -585,22 +614,22 @@ class BgRenderer {
             a.y = (a.y + a.vy / this.h) % 1.0;
             if (a.y < 0) a.y += 1;
             a.rot += a.vrot;
-            
+
             const ax = a.x * this.w;
             const ay = a.y * this.h;
-            
+
             ctx.save();
             ctx.translate(ax, ay);
             ctx.rotate(a.rot);
-            
+
             ctx.beginPath();
-            for (let j=0; j<8; j++) {
+            for (let j = 0; j < 8; j++) {
                 const angle = (j / 8) * Math.PI * 2;
                 const r = a.size * a.points[j];
-                ctx.lineTo(Math.cos(angle)*r, Math.sin(angle)*r);
+                ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
             }
             ctx.closePath();
-            
+
             const aGrad = ctx.createLinearGradient(-a.size, -a.size, a.size, a.size);
             aGrad.addColorStop(0, '#888');
             aGrad.addColorStop(1, '#222');
@@ -845,7 +874,7 @@ class PlanetWarsApp {
         // Switch music tracks
         if (id === 'battle') {
             this.audio.startBattleMusic();
-        } else if (['title','modes','commanders','armory','shop'].includes(id)) {
+        } else if (['title', 'modes', 'commanders', 'armory', 'shop'].includes(id)) {
             if (this.audio._currentTrack === 'battle') this.audio.startMenuMusic();
         }
 
@@ -904,13 +933,9 @@ class PlanetWarsApp {
             s2.value = 'adaptive';
             s1.disabled = true;
             s2.disabled = true;
-        } else if (this.battleFormat === 'character_duel') {
-            if (s1.value === 'human') s1.value = 'titan';
-            if (s2.value === 'human') s2.value = 'sniper';
-        } else if (this.battleFormat === 'alien_invasion') {
-            s1.value = 'adaptive';
-            s2.value = 'swarm';
         }
+        // For all other formats (classic, character_duel, blitz etc.) 
+        // the user can freely pick any agents — no locking needed
 
         this.updateSetupPreview();
     }
@@ -1180,7 +1205,7 @@ class PlanetWarsApp {
         }
 
         // Play the correct SFX for each special
-        const sfxMap = { nuke_item:'nuke', freeze:'freeze', emp:'emp', reinforce:'reinforce', combo:'nuke' };
+        const sfxMap = { nuke_item: 'nuke', freeze: 'freeze', emp: 'emp', reinforce: 'reinforce', combo: 'nuke' };
         this.audio.playUi(sfxMap[specialId] || 'special');
         this.showToast('💥 ' + specialId.toUpperCase() + ' activated!', 'success');
         this.sendEmoji('💥');
@@ -1303,14 +1328,14 @@ class PlanetWarsApp {
                 this.showToast('✅ Connected to server', 'success');
             };
             this.ws.onmessage = (e) => {
-                try { this._handleMsg(JSON.parse(e.data)); } catch(err) { console.error(err); }
+                try { this._handleMsg(JSON.parse(e.data)); } catch (err) { console.error(err); }
             };
             this.ws.onclose = () => {
                 this.connected = false;
                 setTimeout(() => this._connectWS(), 3000);
             };
-            this.ws.onerror = () => {};
-        } catch(e) {}
+            this.ws.onerror = () => { };
+        } catch (e) { }
     }
 
     _handleMsg(msg) {
@@ -1424,7 +1449,7 @@ class PlanetWarsApp {
             if (this.renderer) {
                 this.renderer.setAgentDecisions(state);
             }
-            
+
             // Check for explicit brain state from Adaptive Agent (typically player 1 or 2)
             let brainState = null;
             if (state.agent_decisions['1'] && state.agent_decisions['1'].length > 0 && state.agent_decisions['1'][0].brain_state) {
@@ -1432,7 +1457,7 @@ class PlanetWarsApp {
             } else if (state.agent_decisions['2'] && state.agent_decisions['2'].length > 0 && state.agent_decisions['2'][0].brain_state) {
                 brainState = state.agent_decisions['2'][0].brain_state;
             }
-            
+
             if (brainState) {
                 const bTactic = document.getElementById('brainTactic');
                 const bConf = document.getElementById('brainConfidence');
@@ -1449,9 +1474,9 @@ class PlanetWarsApp {
     _updateDecisionPanel(pid, agentId, decisions) {
         const container = document.getElementById('dpContent' + pid);
         const nameEl = document.getElementById('dpName' + pid);
-        
+
         if (!container || !nameEl) return;
-        
+
         if (agentId === 'human') {
             nameEl.textContent = this.save.playerName.toUpperCase();
         } else {
@@ -1460,20 +1485,20 @@ class PlanetWarsApp {
                 nameEl.textContent = commander.name.toUpperCase();
             }
         }
-        
+
         if (!decisions || decisions.length === 0) {
             container.innerHTML = `<span style="color:#718096">Standby... building forces.</span>`;
             return;
         }
 
         // Only show up to 2 most confident decisions
-        const topDecisions = [...decisions].sort((a,b) => b.confidence - a.confidence).slice(0, 2);
-        
+        const topDecisions = [...decisions].sort((a, b) => b.confidence - a.confidence).slice(0, 2);
+
         let html = '';
         for (const d of topDecisions) {
             const confClass = d.confidence > 0.8 ? 'high' : d.confidence > 0.5 ? 'med' : 'low';
             let actionColor = d.type === 'ATTACK' ? '#ff4f6d' : (d.type === 'EXPAND' ? '#fbbf24' : '#00d4ff');
-            
+
             html += `
                 <div style="margin-bottom: 2px;">
                     <span class="dp-action" style="color:${actionColor}">${d.type}</span> 
@@ -1619,12 +1644,12 @@ class PlanetWarsApp {
         const container = document.getElementById('resultsConfetti');
         if (!container) return;
         container.innerHTML = '';
-        const colors = ['#4f8cff','#ff4f6d','#00d4ff','#7b61ff','#fbbf24','#34d399','#ff6b35'];
+        const colors = ['#4f8cff', '#ff4f6d', '#00d4ff', '#7b61ff', '#fbbf24', '#34d399', '#ff6b35'];
         for (let i = 0; i < 40; i++) {
             const p = document.createElement('div');
             const color = colors[Math.floor(Math.random() * colors.length)];
             const size = Math.random() * 8 + 4;
-            p.style.cssText = `position:absolute;width:${size}px;height:${size}px;background:${color};border-radius:${Math.random()>0.5?'50%':'2px'};left:${Math.random()*100}%;top:-10px;opacity:0.8;animation:confettiFall ${Math.random()*3+2}s ${Math.random()*2}s ease-in infinite`;
+            p.style.cssText = `position:absolute;width:${size}px;height:${size}px;background:${color};border-radius:${Math.random() > 0.5 ? '50%' : '2px'};left:${Math.random() * 100}%;top:-10px;opacity:0.8;animation:confettiFall ${Math.random() * 3 + 2}s ${Math.random() * 2}s ease-in infinite`;
             container.appendChild(p);
         }
         if (!document.getElementById('confettiCSS')) {
@@ -1713,9 +1738,9 @@ class PlanetWarsApp {
                 <div class="card-name">${item.name}</div>
                 <div class="card-desc">${item.desc}</div>
                 ${equipped ? '<div class="card-badge equipped-badge">⭐ EQUIPPED</div>' :
-                  owned ? '<div class="card-badge owned-badge">✅ OWNED</div>' :
-                  `<div class="card-price">🪙 ${item.price}</div>`}
-                ${tab === 'specials' && owned ? `<div class="card-price" style="color:var(--green)">x${this.save.ownedSpecials['pwr_'+item.id]}</div>` : ''}
+                    owned ? '<div class="card-badge owned-badge">✅ OWNED</div>' :
+                        `<div class="card-price">🪙 ${item.price}</div>`}
+                ${tab === 'specials' && owned ? `<div class="card-price" style="color:var(--green)">x${this.save.ownedSpecials['pwr_' + item.id]}</div>` : ''}
             `;
             card.onclick = () => this._handleArmoryClick(tab, item, owned, equipped);
             grid.appendChild(card);
@@ -1812,7 +1837,7 @@ class PlanetWarsApp {
             const card = document.createElement('div');
             card.className = 'item-card' + (claimed ? ' owned' : '');
             const priceText = item.currency === 'free' ? '🆓 FREE' :
-                              item.currency === 'gems' ? `💎 ${item.price}` : `🪙 ${item.price}`;
+                item.currency === 'gems' ? `💎 ${item.price}` : `🪙 ${item.price}`;
             card.innerHTML = `
                 <span class="card-icon">${item.icon}</span>
                 <div class="card-name">${item.name}</div>
@@ -1872,8 +1897,8 @@ class PlanetWarsApp {
                 <div class="card-name">${theme.name}</div>
                 <div class="card-desc">${theme.desc}</div>
                 ${active ? '<div class="card-badge equipped-badge">⭐ ACTIVE</div>' :
-                  owned ? '<div class="card-price" style="color:var(--green)">✅ Tap to activate</div>' :
-                  `<div class="card-price">🪙 ${theme.price}</div>`}
+                    owned ? '<div class="card-price" style="color:var(--green)">✅ Tap to activate</div>' :
+                        `<div class="card-price">🪙 ${theme.price}</div>`}
             `;
             card.onclick = () => this._handleThemeClick(theme, owned, active);
             grid.appendChild(card);
@@ -1929,7 +1954,7 @@ class PlanetWarsApp {
                     ${level.emoji}
                 </div>
                 <div class="campaign-label">${level.id}. ${level.name}</div>
-                <div class="campaign-stars">${stars > 0 ? '⭐'.repeat(stars) + '☆'.repeat(3-stars) : unlocked ? '☆☆☆' : '🔒'}</div>
+                <div class="campaign-stars">${stars > 0 ? '⭐'.repeat(stars) + '☆'.repeat(3 - stars) : unlocked ? '☆☆☆' : '🔒'}</div>
                 ${i > 0 ? '<div class="campaign-line ' + (stars > 0 ? 'done' : '') + '"></div>' : ''}
             `;
             if (unlocked) node.onclick = () => this.launchCampaignLevel(level.id);
@@ -1954,7 +1979,7 @@ class PlanetWarsApp {
             <div class="stat-card"><div class="sc-icon">🪙</div><div class="sc-info"><div class="sc-label">COINS</div><div class="sc-val">${s.coins}</div></div></div>
             <div class="stat-card"><div class="sc-icon">💎</div><div class="sc-info"><div class="sc-label">GEMS</div><div class="sc-val">${s.gems}</div></div></div>
             <div class="stat-card"><div class="sc-icon">🎖️</div><div class="sc-info"><div class="sc-label">COMMANDERS OWNED</div><div class="sc-val">${s.ownedCommanders.length} / ${COMMANDERS.length}</div></div></div>
-            <div class="stat-card"><div class="sc-icon">🗺️</div><div class="sc-info"><div class="sc-label">CAMPAIGN STARS</div><div class="sc-val">${Object.values(s.campaignStars).reduce((a,b)=>a+b,0)} / ${CAMPAIGN_LEVELS.length * 3}</div></div></div>
+            <div class="stat-card"><div class="sc-icon">🗺️</div><div class="sc-info"><div class="sc-label">CAMPAIGN STARS</div><div class="sc-val">${Object.values(s.campaignStars).reduce((a, b) => a + b, 0)} / ${CAMPAIGN_LEVELS.length * 3}</div></div></div>
         `;
     }
 
@@ -2057,8 +2082,8 @@ class PlanetWarsApp {
         // Unlock audio on EVERY pointer/key event (not just the first one)
         // Browsers can re-suspend the AudioContext when the tab loses focus.
         document.addEventListener('pointerdown', () => this.audio.unlock(), { passive: true });
-        document.addEventListener('keydown',     () => this.audio.unlock(), { passive: true });
-        document.addEventListener('touchstart',  () => this.audio.unlock(), { passive: true });
+        document.addEventListener('keydown', () => this.audio.unlock(), { passive: true });
+        document.addEventListener('touchstart', () => this.audio.unlock(), { passive: true });
 
         document.addEventListener('click', (e) => {
             this.audio.unlock(); // re-ensure context is running
@@ -2289,6 +2314,7 @@ class PlanetWarsApp {
 
     toggleMusic(enabled) {
         this.save.musicEnabled = enabled;
+        this.audio.unlock(); // ensure context is alive before toggling
         this.audio.setMusicEnabled(enabled);
         persistSave(this.save);
     }
@@ -2297,6 +2323,146 @@ class PlanetWarsApp {
         this.save.soundEnabled = enabled;
         this.audio.setSfxEnabled(enabled);
         persistSave(this.save);
+    }
+
+    // ─── How To Play Modal ───────────────────────────────
+
+    showHowToPlay() {
+        this._htpPage = 0;
+        this._renderHtpPage();
+        const overlay = document.getElementById('howToPlayOverlay');
+        if (overlay) overlay.classList.remove('hidden');
+        this.audio.playUi('tab');
+    }
+
+    closeHowToPlay() {
+        const overlay = document.getElementById('howToPlayOverlay');
+        if (overlay) overlay.classList.add('hidden');
+        this.audio.playUi('click');
+    }
+
+    htpNext() {
+        const pages = this._htpPages();
+        if (this._htpPage < pages.length - 1) {
+            this._htpPage++;
+            this._renderHtpPage();
+        } else {
+            this.closeHowToPlay();
+        }
+        this.audio.playUi('click');
+    }
+
+    htpPrev() {
+        if (this._htpPage > 0) {
+            this._htpPage--;
+            this._renderHtpPage();
+        }
+        this.audio.playUi('click');
+    }
+
+    _htpPages() {
+        return [
+            {
+                title: '🌌 Welcome to Planet Wars!',
+                content: `
+                    <div class="htp-slide">
+                        <div class="htp-big-icon">🪐</div>
+                        <h3>Conquer the Galaxy</h3>
+                        <p>Planet Wars is a real-time strategy game where you battle AI opponents to control planets and expand your empire across the cosmos.</p>
+                        <div class="htp-tip">💡 <strong>Goal:</strong> Eliminate all enemy ships or have the most ships when time runs out!</div>
+                    </div>
+                `
+            },
+            {
+                title: '🚀 How to Move Ships',
+                content: `
+                    <div class="htp-slide">
+                        <div class="htp-big-icon">👆</div>
+                        <h3>Tap to Command</h3>
+                        <p><strong>Step 1:</strong> Tap one of YOUR planets (shown in blue) to select it.</p>
+                        <p><strong>Step 2:</strong> Tap any other planet to send 50% of your ships there.</p>
+                        <div class="htp-tip">💡 Hold <strong>Shift</strong> while clicking to send 70% of ships instead!</div>
+                        <div class="htp-tip">⚡ Tap an enemy planet directly to <strong>auto-attack</strong> from your strongest planet.</div>
+                    </div>
+                `
+            },
+            {
+                title: '🎯 Planets & Strategy',
+                content: `
+                    <div class="htp-slide">
+                        <div class="htp-big-icon">🌍</div>
+                        <h3>Planet Types</h3>
+                        <ul class="htp-list">
+                            <li>🔵 <strong>Your planets</strong> — produce ships every turn</li>
+                            <li>🔴 <strong>Enemy planets</strong> — attack these to capture them</li>
+                            <li>⚪ <strong>Neutral planets</strong> — free to capture, grow your empire</li>
+                        </ul>
+                        <div class="htp-tip">💡 Bigger planets = faster ship production. Capture them first!</div>
+                    </div>
+                `
+            },
+            {
+                title: '⚔️ Difficulty & Modes',
+                content: `
+                    <div class="htp-slide">
+                        <div class="htp-big-icon">🎮</div>
+                        <h3>Choose Your Challenge</h3>
+                        <ul class="htp-list">
+                            <li>👨‍🚀 <strong>AI vs Me</strong> — You play manually against an AI opponent</li>
+                            <li>⚡ <strong>Quick Match</strong> — Watch two AIs fight each other</li>
+                            <li>🎭 <strong>Character Duel</strong> — Pick AI commanders with unique styles</li>
+                            <li>💥 <strong>Blitz</strong> — Only 50 turns! Fast and intense</li>
+                        </ul>
+                        <div class="htp-tip">🌱 Start with <strong>EASY</strong> difficulty until you get the hang of it!</div>
+                    </div>
+                `
+            },
+            {
+                title: '💥 Power-Ups & Weapons',
+                content: `
+                    <div class="htp-slide">
+                        <div class="htp-big-icon">💫</div>
+                        <h3>Special Abilities</h3>
+                        <p>During battle, use power-ups from the bottom bar:</p>
+                        <ul class="htp-list">
+                            <li>💥 <strong>Nuke</strong> — Destroys 50% ships on an enemy planet</li>
+                            <li>❄️ <strong>Freeze</strong> — Stops enemy fleets for 3 turns</li>
+                            <li>🛡️ <strong>Reinforce</strong> — Adds ships to your weakest planet</li>
+                            <li>⚡ <strong>EMP</strong> — Reduces enemy launch power</li>
+                        </ul>
+                        <div class="htp-tip">🛒 Buy power-ups in the Armory before battle starts!</div>
+                    </div>
+                `
+            },
+        ];
+    }
+
+    _renderHtpPage() {
+        const pages = this._htpPages();
+        const page = pages[this._htpPage];
+        if (!page) return;
+
+        const title = document.getElementById('htpTitle');
+        const content = document.getElementById('htpContent');
+        const prevBtn = document.getElementById('htpPrevBtn');
+        const nextBtn = document.getElementById('htpNextBtn');
+
+        if (title) title.textContent = page.title;
+        if (content) content.innerHTML = page.content;
+
+        // Update dots
+        pages.forEach((_, i) => {
+            const dot = document.getElementById('htpDot' + i);
+            if (dot) dot.classList.toggle('active', i === this._htpPage);
+        });
+        // Show/hide dots for pages beyond 5
+        for (let i = pages.length; i < 5; i++) {
+            const dot = document.getElementById('htpDot' + i);
+            if (dot) dot.style.display = 'none';
+        }
+
+        if (prevBtn) prevBtn.style.display = this._htpPage > 0 ? 'block' : 'none';
+        if (nextBtn) nextBtn.textContent = this._htpPage === pages.length - 1 ? '✅ Got it!' : 'Next ▶';
     }
 }
 
