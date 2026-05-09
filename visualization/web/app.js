@@ -130,6 +130,7 @@ const DEFAULT_SAVE = {
     xpBoostActive: false,
     soundEnabled: true,
     musicEnabled: true,
+    hasSeenGuide: false,
 };
 
 function loadSave() {
@@ -1016,6 +1017,14 @@ class PlanetWarsApp {
             this.battleAgent2 = 'adaptive';
         }
 
+        // Show guide automatically for new users
+        if (!this.save.hasSeenGuide) {
+            this.save.hasSeenGuide = true;
+            persistSave(this.save);
+            this.showHowToPlay();
+            return; // Wait for user to read guide
+        }
+
         const map = document.getElementById('setupMap')?.value || 'duel_medium';
         this._showLoading('Deploying fleet and syncing AI brain...');
         this.audio.playUi('launch');
@@ -1110,6 +1119,15 @@ class PlanetWarsApp {
         this.battleAgent1 = 'greedy'; // Player always uses their selected commander
         this.battleAgent2 = level.agent;
         this._campaignLevelId = levelId;
+
+        // Show guide automatically for new users
+        if (!this.save.hasSeenGuide) {
+            this.save.hasSeenGuide = true;
+            persistSave(this.save);
+            this.showHowToPlay();
+            return;
+        }
+
         this._showLoading('Loading campaign battlefield...');
         this.audio.playUi('launch');
 
@@ -1348,9 +1366,6 @@ class PlanetWarsApp {
                 this.ui?.updateStats(msg.state);
                 this._hideLoading();
                 this.showToast('🚀 Battle commenced!', 'info');
-                if (this._human.active) {
-                    this.showToast('💡 Tip: tap enemy planet directly for auto-launch assist.', 'info', 3200);
-                }
                 break;
 
             case 'game_state':
@@ -2302,7 +2317,7 @@ class PlanetWarsApp {
         if (el) el.innerHTML = html;
     }
 
-    showToast(message, type = 'info', duration = 3000) {
+    showToast(message, type = 'info', duration = 2200) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
         const toast = document.createElement('div');
